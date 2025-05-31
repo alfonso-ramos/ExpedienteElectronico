@@ -2,6 +2,9 @@ package Modelo;
 
 import java.util.Objects;
 
+/**
+ * Modelo de la tabla Consulta
+ */
 public class Consulta {
     private int idConsulta;
     private int idPaciente;
@@ -16,10 +19,34 @@ public class Consulta {
     private String imc_estado;
     private int edad;
 
+    /**
+     * Constructor vacio de consulta
+     */
+    public Consulta(){}
+
+    /**
+     * Constructor de consulta por id
+     * @param idConsulta
+     */
     public Consulta(int idConsulta) {
         this.idConsulta = idConsulta;
     }
 
+    /**
+     * Constructor de consulta completo
+     * @param idConsulta
+     * @param idPaciente
+     * @param diagnostico
+     * @param medicamento
+     * @param fechaReg
+     * @param observaciones
+     * @param talla
+     * @param altura
+     * @param peso
+     * @param imc
+     * @param imc_estado
+     * @param edad
+     */
     public Consulta(int idConsulta, int idPaciente, String diagnostico, String medicamento, String fechaReg, String observaciones, String talla, float altura, float peso, float imc, String imc_estado, int edad) {
         this.idConsulta = idConsulta;
         this.idPaciente = idPaciente;
@@ -34,6 +61,8 @@ public class Consulta {
         this.imc_estado = imc_estado;
         this.edad = edad;
     }
+
+    // Getters y setters
 
     public int getIdConsulta() {
         return idConsulta;
@@ -131,6 +160,8 @@ public class Consulta {
         this.edad = edad;
     }
 
+    // equals
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -138,10 +169,14 @@ public class Consulta {
         return idConsulta == consulta.idConsulta && idPaciente == consulta.idPaciente && Float.compare(altura, consulta.altura) == 0 && Float.compare(peso, consulta.peso) == 0 && Float.compare(imc, consulta.imc) == 0 && edad == consulta.edad && Objects.equals(diagnostico, consulta.diagnostico) && Objects.equals(medicamento, consulta.medicamento) && Objects.equals(fechaReg, consulta.fechaReg) && Objects.equals(observaciones, consulta.observaciones) && Objects.equals(talla, consulta.talla) && Objects.equals(imc_estado, consulta.imc_estado);
     }
 
+    // hashcode
+
     @Override
     public int hashCode() {
         return Objects.hash(idConsulta, idPaciente, diagnostico, medicamento, fechaReg, observaciones, talla, altura, peso, imc, imc_estado, edad);
     }
+
+    // toString
 
     @Override
     public String toString() {
