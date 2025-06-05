@@ -1,13 +1,10 @@
 package rmp.expediente_electronico.gui;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.formdev.flatlaf.FlatDarculaLaf;
 import org.springframework.stereotype.Component;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
+import rmp.expediente_electronico.servicio.PacienteServicio;
 
 @Component
 public class ExpElec_PacientesForma extends JFrame{
@@ -22,14 +19,12 @@ public class ExpElec_PacientesForma extends JFrame{
     private JButton limpiarButton;
     private JTextField buscarPacienteTextField;
     private JPanel panelPrincipal;
-
-
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
 
 
     @Autowired
-    public ExpElec_PacientesForma(IPacienteServicio pacienteServicio){
+    public ExpElec_PacientesForma(PacienteServicio pacienteServicio){
         this.pacienteServicio = pacienteServicio;
         iniciarForma();
     }
@@ -43,9 +38,27 @@ public class ExpElec_PacientesForma extends JFrame{
     }
 
     private void createUIComponents() {
-        this.tablaModeloPacientes = new DefaultTableModel(0, 5);
-        String[] nombresColumnas = {"Matricula", "Nombre", "Apellido", "Carrera", "Fecha de Nacimiento"};
+        this.tablaModeloPacientes = new DefaultTableModel(0, 4);
+        String[] nombresColumnas = {"Matricula", "Nombre", "Apellido", "Carrera"};
         this.tablaModeloPacientes.setColumnIdentifiers(nombresColumnas);
-        this.PacientesTabla = new JTable(this.tablaModeloPacientes);
+        this.PacientesTabla = new JTable(tablaModeloPacientes);
+        this.PacientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //Cargar listado de pacientes
+        listarPacientes();
+    }
+
+    private void listarPacientes(){
+        this.tablaModeloPacientes.setRowCount(0);
+        var pacientes = this.pacienteServicio.listarPacientes();
+
+        pacientes.forEach( paciente -> {
+            Object[] renglonPaciente = {
+                    paciente.getMatricula(),
+                    paciente.getNombres(),
+                    paciente.getApellidos(),
+                    paciente.getProgramaAcademico()
+            };
+            this.tablaModeloPacientes.addRow(renglonPaciente);
+        });
     }
 }
