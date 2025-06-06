@@ -3,6 +3,8 @@ package rmp.expediente_electronico.modelo;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,5 +20,6 @@ public class Paciente {
     private String nombres;
     private String apellidos;
     private String programaAcademico;
-    private String fechaNacimiento;
+    @Temporal(TemporalType.DATE)
+    private Date fechaNacimiento;
 }

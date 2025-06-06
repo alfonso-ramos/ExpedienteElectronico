@@ -2,6 +2,7 @@ package rmp.expediente_electronico.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import com.toedter.calendar.JDateChooser;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JTextField NombreTexto;
     private JTextField ApellidoTexto;
     private JComboBox carreraComboBox;
-    private JFormattedTextField FechaNacimiento;
+    private JDateChooser FechaNacimiento;
     private JButton guardarButton;
     private JButton eliminarButton;
     private JButton limpiarButton;
@@ -75,7 +76,7 @@ public class    ExpElec_PacientesForma extends JFrame{
         String matricula = MatriculaTexto.getText();
         String nombres = NombreTexto.getText();
         String apellidos = ApellidoTexto.getText();
-        String fechaNac = FechaNacimiento.getText();
+        java.sql.Date fechaNac = new java.sql.Date(FechaNacimiento.getDate().getTime());
         String programaAca = carreraComboBox.getSelectedItem().toString();
 
         //aqui irian las validaciones
