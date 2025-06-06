@@ -34,7 +34,6 @@ public class ExpedienteElectronicoApplication {
 			expElecPacientesForma.setVisible(true);
 		});
 		
-		SpringApplication.run(ExpedienteElectronicoApplication.class, args);
 	}
 
 }

@@ -24,7 +24,7 @@ public class ExpElec_PacientesForma extends JFrame{
 
 
     @Autowired
-    public ExpElec_PacientesForma(PacienteServicio pacienteServicio){
+    public ExpElec_PacientesForma(IPacienteServicio pacienteServicio){
         this.pacienteServicio = pacienteServicio;
         iniciarForma();
     }
