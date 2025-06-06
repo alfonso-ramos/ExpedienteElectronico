@@ -36,6 +36,7 @@ public class    ExpElec_PacientesForma extends JFrame{
         this.pacienteServicio = pacienteServicio;
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
+        limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
     }
 
     private void iniciarForma(){
@@ -89,6 +90,13 @@ public class    ExpElec_PacientesForma extends JFrame{
             //aca si falla
             System.out.println("hola");
         }
+    }
+
+    public void limpiarFormulario(){
+        NombreTexto.setText("");
+        MatriculaTexto.setText("");
+        ApellidoTexto.setText("");
+        FechaNacimiento.setDate(null);
     }
 
     public void iniciarProgramasAcademicos(){
