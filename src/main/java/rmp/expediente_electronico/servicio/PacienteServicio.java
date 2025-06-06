@@ -34,4 +34,9 @@ public class PacienteServicio implements IPacienteServicio{
         pacienteRepositorio.delete(paciente);
 
     }
+
+    @Override
+    public List<Paciente> buscarPacientes(String busqueda){
+        return pacienteRepositorio.findByNombresContainingIgnoreCaseOrMatriculaContainingIgnoreCaseOrApellidosContainingIgnoreCase(busqueda,busqueda,busqueda);
+    }
 }
