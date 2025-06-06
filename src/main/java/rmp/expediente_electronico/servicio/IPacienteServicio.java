@@ -12,4 +12,6 @@ public interface IPacienteServicio {
     public void guardarPaciente(Paciente paciente);
 
     public void eliminarPaciente(Paciente paciente);
+
+    public List<Paciente> buscarPacientes(String busqueda);
 }
