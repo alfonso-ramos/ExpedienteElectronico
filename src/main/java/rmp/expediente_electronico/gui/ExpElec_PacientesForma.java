@@ -1,13 +1,15 @@
 package rmp.expediente_electronico.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 @Component
-public class ExpElec_PacientesForma extends JFrame{
+public class    ExpElec_PacientesForma extends JFrame{
     private JTextField MatriculaTexto;
     private JTable PacientesTabla;
     private JTextField NombreTexto;
@@ -24,7 +26,7 @@ public class ExpElec_PacientesForma extends JFrame{
 
 
     @Autowired
-    public ExpElec_PacientesForma(PacienteServicio pacienteServicio){
+    public ExpElec_PacientesForma(PacienteServicio pacienteServicio) {
         this.pacienteServicio = pacienteServicio;
         iniciarForma();
     }

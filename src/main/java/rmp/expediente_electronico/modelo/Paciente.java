@@ -1,9 +1,6 @@
 package rmp.expediente_electronico.modelo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,6 +12,7 @@ import lombok.*;
 public class Paciente {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @Column(name = "idPaciente")
     private Integer idPaciente;
     private String matricula;
     private String nombres;
