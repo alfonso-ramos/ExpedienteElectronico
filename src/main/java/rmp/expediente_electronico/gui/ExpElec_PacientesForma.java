@@ -10,6 +10,7 @@ import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
@@ -49,11 +50,20 @@ public class    ExpElec_PacientesForma extends JFrame{
     }
 
     private void createUIComponents() {
-        this.tablaModeloPacientes = new DefaultTableModel(0, 4);
-        String[] nombresColumnas = {"Matricula", "Nombre", "Apellido", "Carrera"};
+        // evitar la edicion de tablas
+        this.tablaModeloPacientes = new DefaultTableModel(0, 5){
+            @Override
+            public boolean isCellEditable(int row,int column){return false;}
+        };
+
+        String[] nombresColumnas = {"Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
         this.tablaModeloPacientes.setColumnIdentifiers(nombresColumnas);
+
         this.PacientesTabla = new JTable(tablaModeloPacientes);
+
         this.PacientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+
         //Cargar listado de pacientes
         listarPacientes();
     }
@@ -67,7 +77,8 @@ public class    ExpElec_PacientesForma extends JFrame{
                     paciente.getMatricula(),
                     paciente.getNombres(),
                     paciente.getApellidos(),
-                    paciente.getProgramaAcademico()
+                    paciente.getProgramaAcademico(),
+                    paciente.getFechaNacimiento()
             };
             this.tablaModeloPacientes.addRow(renglonPaciente);
         });
