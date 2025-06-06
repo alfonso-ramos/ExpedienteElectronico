@@ -5,8 +5,13 @@ import javax.swing.table.DefaultTableModel;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 
 @Component
 public class    ExpElec_PacientesForma extends JFrame{
@@ -29,9 +34,11 @@ public class    ExpElec_PacientesForma extends JFrame{
     public ExpElec_PacientesForma(PacienteServicio pacienteServicio) {
         this.pacienteServicio = pacienteServicio;
         iniciarForma();
+        guardarButton.addActionListener(actionEvent -> guardarPaciente());
     }
 
     private void iniciarForma(){
+        iniciarProgramasAcademicos();
         setTitle("Gestion de Pacientes");
         setContentPane(panelPrincipal);
         setSize(800, 600);
@@ -62,5 +69,30 @@ public class    ExpElec_PacientesForma extends JFrame{
             };
             this.tablaModeloPacientes.addRow(renglonPaciente);
         });
+    }
+
+    public void guardarPaciente(){
+        String matricula = MatriculaTexto.getText();
+        String nombres = NombreTexto.getText();
+        String apellidos = ApellidoTexto.getText();
+        String fechaNac = FechaNacimiento.getText();
+        String programaAca = carreraComboBox.getSelectedItem().toString();
+
+        //aqui irian las validaciones
+
+        if(true){
+            Paciente paciente = new Paciente(null,matricula,nombres,apellidos,programaAca,fechaNac);
+            pacienteServicio.guardarPaciente(paciente);
+            listarPacientes();
+        }else{
+            //aca si falla
+            System.out.println("hola");
+        }
+    }
+
+    public void iniciarProgramasAcademicos(){
+        String[] programas = {"Tecnologías", "Mecatrónica"};
+        DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
+        carreraComboBox.setModel(modelo);
     }
 }
