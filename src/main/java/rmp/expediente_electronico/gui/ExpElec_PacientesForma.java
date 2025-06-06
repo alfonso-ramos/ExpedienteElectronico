@@ -11,9 +11,9 @@ import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.lang.reflect.Array;
+import java.util.List;
 
 @Component
 public class    ExpElec_PacientesForma extends JFrame{
@@ -38,6 +38,13 @@ public class    ExpElec_PacientesForma extends JFrame{
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
+
+        buscarPacienteTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                buscarPaciente();
+            }
+        });
     }
 
     private void iniciarForma(){
@@ -72,6 +79,10 @@ public class    ExpElec_PacientesForma extends JFrame{
         this.tablaModeloPacientes.setRowCount(0);
         var pacientes = this.pacienteServicio.listarPacientes();
 
+        listar(pacientes);
+    }
+
+    public void listar(List<Paciente> pacientes){
         pacientes.forEach( paciente -> {
             Object[] renglonPaciente = {
                     paciente.getMatricula(),
@@ -103,11 +114,25 @@ public class    ExpElec_PacientesForma extends JFrame{
         }
     }
 
+    public void buscarPaciente(){
+        String buscar = buscarPacienteTextField.getText();
+        if(buscar.equals("")){
+            listarPacientes();
+        }else{
+            this.tablaModeloPacientes.setRowCount(0);
+            var pacientes = this.pacienteServicio.buscarPacientes(buscar);
+
+            listar(pacientes);
+        }
+    }
+
     public void limpiarFormulario(){
         NombreTexto.setText("");
         MatriculaTexto.setText("");
         ApellidoTexto.setText("");
         FechaNacimiento.setDate(null);
+        buscarPacienteTextField.setText("");
+        listarPacientes();
     }
 
     public void iniciarProgramasAcademicos(){
