@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
 @Component
 public class ExpElec_PacienteEdicion extends JFrame{
@@ -34,6 +35,8 @@ public class ExpElec_PacienteEdicion extends JFrame{
         this.vistaPacientes = vistaPacientes;
         iniciarForma();
         regresarButton.addActionListener(actionEvent -> vistaPacientes.cerrarEdicion());
+        editarButton.addActionListener(actionEvent -> actualizarPaciente());
+        eliminarButton.addActionListener(actionEvent -> eliminarPaciente());
     }
 
     public void setPaciente(Paciente paciente){
@@ -61,5 +64,26 @@ public class ExpElec_PacienteEdicion extends JFrame{
         String[] programas = {"Tecnologías", "Mecatrónica"};
         DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
         carreraComboBox.setModel(modelo);
+    }
+
+    public void actualizarPaciente(){
+        //aca iria la validacion otra vez :v
+        if(true) {
+            paciente.setMatricula(matriculaTexto.getText());
+            paciente.setNombres(nombresTexto.getText());
+            paciente.setApellidos(apellidosTexto.getText());
+            paciente.setProgramaAcademico(carreraComboBox.getSelectedItem().toString());
+            paciente.setFechaNacimiento(new Date(fechaNac.getDate().getTime()));
+            pacienteServicio.guardarPaciente(paciente);
+
+            vistaPacientes.cerrarEdicion();
+        }else{
+            System.out.println("hola");
+        }
+    }
+
+    public void eliminarPaciente(){
+        pacienteServicio.eliminarPaciente(paciente);
+        vistaPacientes.cerrarEdicion();
     }
 }

@@ -151,6 +151,7 @@ public class    ExpElec_PacientesForma extends JFrame{
     public void cerrarEdicion(){
         vistaEdicion.setVisible(false);
         this.setVisible(true);
+        listarPacientes();
     }
 
     public void limpiarFormulario(){
