@@ -30,11 +30,13 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JPanel panelPrincipal;
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
+    private ExpElec_PacienteEdicion vistaEdicion;
 
 
     @Autowired
     public ExpElec_PacientesForma(PacienteServicio pacienteServicio) {
         this.pacienteServicio = pacienteServicio;
+        this.vistaEdicion = new ExpElec_PacienteEdicion(pacienteServicio,this);
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
@@ -43,6 +45,14 @@ public class    ExpElec_PacientesForma extends JFrame{
             @Override
             public void keyTyped(KeyEvent e) {
                 buscarPaciente();
+            }
+        });
+        PacientesTabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2){
+                    editarPaciente();
+                }
             }
         });
     }
@@ -58,12 +68,12 @@ public class    ExpElec_PacientesForma extends JFrame{
 
     private void createUIComponents() {
         // evitar la edicion de tablas
-        this.tablaModeloPacientes = new DefaultTableModel(0, 5){
+        this.tablaModeloPacientes = new DefaultTableModel(0, 6){
             @Override
             public boolean isCellEditable(int row,int column){return false;}
         };
 
-        String[] nombresColumnas = {"Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
+        String[] nombresColumnas = {"Id","Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
         this.tablaModeloPacientes.setColumnIdentifiers(nombresColumnas);
 
         this.PacientesTabla = new JTable(tablaModeloPacientes);
@@ -85,6 +95,7 @@ public class    ExpElec_PacientesForma extends JFrame{
     public void listar(List<Paciente> pacientes){
         pacientes.forEach( paciente -> {
             Object[] renglonPaciente = {
+                    paciente.getIdPaciente(),
                     paciente.getMatricula(),
                     paciente.getNombres(),
                     paciente.getApellidos(),
@@ -124,6 +135,22 @@ public class    ExpElec_PacientesForma extends JFrame{
 
             listar(pacientes);
         }
+    }
+
+    public void editarPaciente(){
+        var renglon = PacientesTabla.getSelectedRow();
+        Integer idPaciente = (Integer) PacientesTabla.getModel().getValueAt(renglon,0);
+        Paciente paciente = pacienteServicio.buscarPacientePorId(idPaciente);
+        vistaEdicion.setPaciente(paciente);
+        vistaEdicion.rellenarFormulario();
+        vistaEdicion.setSize(this.getSize());
+        this.setVisible(false);
+        vistaEdicion.setVisible(true);
+    }
+
+    public void cerrarEdicion(){
+        vistaEdicion.setVisible(false);
+        this.setVisible(true);
     }
 
     public void limpiarFormulario(){
