@@ -29,11 +29,13 @@ public class    ExpElec_PacientesForma extends JFrame{
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
     private Integer idPaciente;
+    private ExpElec_PacienteEdicion vistaEdicion;
 
 
     @Autowired
     public ExpElec_PacientesForma(PacienteServicio pacienteServicio) {
         this.pacienteServicio = pacienteServicio;
+        this.vistaEdicion = new ExpElec_PacienteEdicion(pacienteServicio,this);
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
@@ -49,6 +51,14 @@ public class    ExpElec_PacientesForma extends JFrame{
             @Override
             public void keyTyped(KeyEvent e) {
                 buscarPaciente();
+            }
+        });
+        pacientesTabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2){
+                    editarPaciente();
+                }
             }
         });
     }
@@ -148,6 +158,23 @@ public class    ExpElec_PacientesForma extends JFrame{
 
             listar(pacientes);
         }
+    }
+
+    public void editarPaciente(){
+        var renglon = pacientesTabla.getSelectedRow();
+        Integer idPaciente = (Integer) pacientesTabla.getModel().getValueAt(renglon,0);
+        Paciente paciente = pacienteServicio.buscarPacientePorId(idPaciente);
+        vistaEdicion.setPaciente(paciente);
+        vistaEdicion.rellenarFormulario();
+        vistaEdicion.setSize(this.getSize());
+        this.setVisible(false);
+        vistaEdicion.setVisible(true);
+    }
+
+    public void cerrarEdicion(){
+        vistaEdicion.setVisible(false);
+        this.setVisible(true);
+        listarPacientes();
     }
 
     public void limpiarFormulario(){
