@@ -3,22 +3,20 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
+import java.sql.Date;
 import java.util.List;
 
 @Component
 public class    ExpElec_PacientesForma extends JFrame{
     private JTextField MatriculaTexto;
-    private JTable PacientesTabla;
+    private JTable pacientesTabla;
     private JTextField NombreTexto;
     private JTextField ApellidoTexto;
     private JComboBox carreraComboBox;
@@ -30,6 +28,7 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JPanel panelPrincipal;
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
+    private Integer idPaciente;
     private ExpElec_PacienteEdicion vistaEdicion;
 
 
@@ -41,13 +40,20 @@ public class    ExpElec_PacientesForma extends JFrame{
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
 
+        pacientesTabla.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                cargarPacienteSeleccionado();
+            }
+        });
         buscarPacienteTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 buscarPaciente();
             }
         });
-        PacientesTabla.addMouseListener(new MouseAdapter() {
+        pacientesTabla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount() == 2){
@@ -73,13 +79,10 @@ public class    ExpElec_PacientesForma extends JFrame{
             public boolean isCellEditable(int row,int column){return false;}
         };
 
-        String[] nombresColumnas = {"Id","Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
+        String[] nombresColumnas = {"ID", "Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
         this.tablaModeloPacientes.setColumnIdentifiers(nombresColumnas);
-
-        this.PacientesTabla = new JTable(tablaModeloPacientes);
-
-        this.PacientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+        this.pacientesTabla = new JTable(tablaModeloPacientes);
+        this.pacientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //Cargar listado de pacientes
         listarPacientes();
@@ -107,22 +110,42 @@ public class    ExpElec_PacientesForma extends JFrame{
     }
 
     public void guardarPaciente(){
-        String matricula = MatriculaTexto.getText();
-        String nombres = NombreTexto.getText();
-        String apellidos = ApellidoTexto.getText();
+        if (MatriculaTexto.getText().equals("")){
+            mostrarMensaje("La matricula es obligatoria");
+            MatriculaTexto.requestFocusInWindow();
+            return;
+        }
+        if(NombreTexto.getText().equals("")){
+            mostrarMensaje("El nombre es requerido");
+            NombreTexto.requestFocusInWindow();
+            return;
+        }
+        if(ApellidoTexto.getText().equals("")){
+            mostrarMensaje("El apellido es requerido");
+            ApellidoTexto.requestFocusInWindow();
+            return;
+        }
+        if(FechaNacimiento.getDate().equals("")){
+            mostrarMensaje("La fecha de nacimiento es requerida");
+            FechaNacimiento.requestFocusInWindow();
+            return;
+        }
+
+        var matricula = MatriculaTexto.getText();
+        var nombre = NombreTexto.getText();
+        var apellido = ApellidoTexto.getText();
         java.sql.Date fechaNac = new java.sql.Date(FechaNacimiento.getDate().getTime());
         String programaAca = carreraComboBox.getSelectedItem().toString();
+        var paciente = new Paciente(this.idPaciente, matricula, nombre, apellido, programaAca, fechaNac);
+        this.pacienteServicio.guardarPaciente(paciente);
 
-        //aqui irian las validaciones
-
-        if(true){
-            Paciente paciente = new Paciente(null,matricula,nombres,apellidos,programaAca,fechaNac);
-            pacienteServicio.guardarPaciente(paciente);
-            listarPacientes();
-        }else{
-            //aca si falla
-            System.out.println("hola");
+        if(this.idPaciente == null){
+            mostrarMensaje("Paciente agregado correctamente");
+        } else{
+            mostrarMensaje("Datos del paciente actualizados");
         }
+        limpiarFormulario();
+        listarPacientes();
     }
 
     public void buscarPaciente(){
@@ -138,8 +161,8 @@ public class    ExpElec_PacientesForma extends JFrame{
     }
 
     public void editarPaciente(){
-        var renglon = PacientesTabla.getSelectedRow();
-        Integer idPaciente = (Integer) PacientesTabla.getModel().getValueAt(renglon,0);
+        var renglon = pacientesTabla.getSelectedRow();
+        Integer idPaciente = (Integer) pacientesTabla.getModel().getValueAt(renglon,0);
         Paciente paciente = pacienteServicio.buscarPacientePorId(idPaciente);
         vistaEdicion.setPaciente(paciente);
         vistaEdicion.rellenarFormulario();
@@ -161,11 +184,46 @@ public class    ExpElec_PacientesForma extends JFrame{
         FechaNacimiento.setDate(null);
         buscarPacienteTextField.setText("");
         listarPacientes();
+
     }
 
     public void iniciarProgramasAcademicos(){
-        String[] programas = {"Tecnologías", "Mecatrónica"};
+        String[] programas = {
+                "Ingeniería en Tecnologías de la Información e Innovación digital",
+                "Ingeniería en BiotecnologÍa",
+                "Ingeniería Mecatrónica",
+                "Ingeniería en Energía y Desarrollo Sostenible",
+                "Ingeniería ambiental y sustentabilidad",
+                "Ingeniería en Logística",
+                "Ingeniería Biomédica",
+                "Ingeniería en animación y efectos visuales",
+                "Ingeniería en Nanotecnología",
+                "Licenciatura en Terapia Física",
+                "Licenciatura en administración"
+        };
         DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
         carreraComboBox.setModel(modelo);
+    }
+
+    private void cargarPacienteSeleccionado(){
+        var renglon = pacientesTabla.getSelectedRow();
+        if(renglon != -1){
+            var id = pacientesTabla.getModel().getValueAt(renglon, 0).toString();
+            this.idPaciente = Integer.parseInt(id);
+            var matricula = pacientesTabla.getModel().getValueAt(renglon, 1).toString();
+            this.MatriculaTexto.setText(matricula);
+            var nombre = pacientesTabla.getModel().getValueAt(renglon, 2).toString();
+            this.NombreTexto.setText(nombre);
+            var apellido = pacientesTabla.getModel().getValueAt(renglon, 3).toString();
+            this.ApellidoTexto.setText(apellido);
+            var carrera = pacientesTabla.getModel().getValueAt(renglon, 4).toString();
+            this.carreraComboBox.setSelectedItem(carrera);
+            var fechaNac = pacientesTabla.getModel().getValueAt(renglon, 5);
+            this.FechaNacimiento.setDate((Date) fechaNac);
+        }
+    }
+
+    private void mostrarMensaje(String mensaje){
+        JOptionPane.showMessageDialog(this, mensaje);
     }
 }
