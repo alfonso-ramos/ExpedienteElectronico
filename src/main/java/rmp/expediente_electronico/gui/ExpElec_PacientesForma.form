@@ -127,6 +127,7 @@
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
+            <properties/>
           </component>
           <vspacer id="66e6c">
             <constraints>
@@ -195,7 +196,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="9ebbb" class="javax.swing.JTable" binding="PacientesTabla" custom-create="true">
+              <component id="9ebbb" class="javax.swing.JTable" binding="pacientesTabla" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>
