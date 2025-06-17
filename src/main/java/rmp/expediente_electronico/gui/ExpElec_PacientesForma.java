@@ -3,16 +3,13 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
 import java.util.List;
 
 @Component
@@ -24,10 +21,10 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JComboBox carreraComboBox;
     private JDateChooser FechaNacimiento;
     private JButton guardarButton;
-    private JButton eliminarButton;
     private JButton limpiarButton;
     private JTextField buscarPacienteTextField;
     private JPanel panelPrincipal;
+    private JButton regresarButton;
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
     private ExpElec_PacienteEdicion vistaEdicion;
