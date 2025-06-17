@@ -10,7 +10,10 @@ import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import java.awt.event.*;
+<<<<<<< HEAD
 import java.sql.Date;
+=======
+>>>>>>> 052bd2e ([ADD] vista main pedorra)
 import java.util.List;
 
 @Component
@@ -22,10 +25,10 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JComboBox carreraComboBox;
     private JDateChooser FechaNacimiento;
     private JButton guardarButton;
-    private JButton eliminarButton;
     private JButton limpiarButton;
     private JTextField buscarPacienteTextField;
     private JPanel panelPrincipal;
+    private JButton regresarButton;
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
     private Integer idPaciente;

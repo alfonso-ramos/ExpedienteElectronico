@@ -42,16 +42,6 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="6bd69" class="javax.swing.JTextField" binding="matriculaTexto">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <font/>
-                </properties>
-              </component>
               <component id="e5843" class="javax.swing.JLabel">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -183,6 +173,16 @@
                   <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
+              <component id="6bd69" class="javax.swing.JTextField" binding="matriculaTexto">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <font/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="f787f" class="javax.swing.JButton" binding="regresarButton" default-binding="true">
