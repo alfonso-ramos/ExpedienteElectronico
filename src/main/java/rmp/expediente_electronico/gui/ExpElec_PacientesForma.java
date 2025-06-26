@@ -47,7 +47,7 @@ public class    ExpElec_PacientesForma extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                cargarPacienteSeleccionado();
+                editarPaciente();
             }
         });
         buscarPacienteTextField.addKeyListener(new KeyAdapter() {
