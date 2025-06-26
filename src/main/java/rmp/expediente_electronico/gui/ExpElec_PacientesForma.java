@@ -10,10 +10,7 @@ import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import java.awt.event.*;
-
 import java.sql.Date;
-
-
 import java.util.List;
 
 @Component
@@ -50,7 +47,7 @@ public class    ExpElec_PacientesForma extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                editarPaciente();
+                cargarPacienteSeleccionado();
             }
         });
         buscarPacienteTextField.addKeyListener(new KeyAdapter() {
@@ -239,6 +236,7 @@ public class    ExpElec_PacientesForma extends JFrame{
             this.FechaNacimiento.setDate((Date) fechaNac);
         }
     }
+
      */
 
     private void mostrarMensaje(String mensaje){

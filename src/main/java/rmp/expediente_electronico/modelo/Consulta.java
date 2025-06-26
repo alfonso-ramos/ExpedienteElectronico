@@ -2,7 +2,6 @@ package rmp.expediente_electronico.modelo;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
 
 @Entity
@@ -12,7 +11,6 @@ import java.util.Date;
 @ToString
 @EqualsAndHashCode
 public class Consulta {
-
     @Id
     @GeneratedValue
     private Integer idConsulta;
@@ -31,5 +29,4 @@ public class Consulta {
     private Float imc;
     private String imc_estado;
     private Integer edad;
-
 }
