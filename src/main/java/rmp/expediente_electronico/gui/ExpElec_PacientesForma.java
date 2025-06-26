@@ -22,23 +22,26 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JComboBox carreraComboBox;
     private JDateChooser FechaNacimiento;
     private JButton guardarButton;
-    private JButton eliminarButton;
     private JButton limpiarButton;
     private JTextField buscarPacienteTextField;
     private JPanel panelPrincipal;
+    private JButton regresarButton;
     IPacienteServicio pacienteServicio;
     private DefaultTableModel tablaModeloPacientes;
     private Integer idPaciente;
     private ExpElec_PacienteEdicion vistaEdicion;
+    private ExpElec_Main vistaMain;
 
 
     @Autowired
-    public ExpElec_PacientesForma(PacienteServicio pacienteServicio) {
+    public ExpElec_PacientesForma(PacienteServicio pacienteServicio, ExpElec_PacienteEdicion pacienteEdicion) {
         this.pacienteServicio = pacienteServicio;
-        this.vistaEdicion = new ExpElec_PacienteEdicion(pacienteServicio,this);
+        this.vistaEdicion = pacienteEdicion;
+        pacienteEdicion.setVistaPacientes(this);
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
+
 
         pacientesTabla.addMouseListener(new MouseAdapter() {
             @Override
@@ -61,6 +64,16 @@ public class    ExpElec_PacientesForma extends JFrame{
                 }
             }
         });
+        regresarButton.addActionListener(actionEvent -> regresar());
+    }
+
+    public void setVistaPrincipal(ExpElec_Main panelPrincipal){
+        this.vistaMain = panelPrincipal;
+    }
+
+    public void regresar(){
+        this.setVisible(false);
+        vistaMain.setVisible(true);
     }
 
     private void iniciarForma(){
@@ -205,6 +218,7 @@ public class    ExpElec_PacientesForma extends JFrame{
         carreraComboBox.setModel(modelo);
     }
 
+    /*
     private void cargarPacienteSeleccionado(){
         var renglon = pacientesTabla.getSelectedRow();
         if(renglon != -1){
@@ -222,6 +236,8 @@ public class    ExpElec_PacientesForma extends JFrame{
             this.FechaNacimiento.setDate((Date) fechaNac);
         }
     }
+
+     */
 
     private void mostrarMensaje(String mensaje){
         JOptionPane.showMessageDialog(this, mensaje);

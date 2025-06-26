@@ -1,9 +1,7 @@
 package rmp.expediente_electronico.modelo;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
 
 @Entity
@@ -14,17 +12,21 @@ import java.util.Date;
 @EqualsAndHashCode
 public class Consulta {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idConsulta")
-    private Integer idPaciente;
-    private Integer edad;
+    @GeneratedValue
+    private Integer idConsulta;
+
+    @ManyToOne
+    @JoinColumn(name = "idPaciente", referencedColumnName = "idPaciente")
+    private Paciente paciente;
+
     private String diagnostico;
-    private String medicamentos;
+    private String medicamento;
+    private Date fechaReg;
     private String observaciones;
-    private Integer talla;
-    private float altura;
-    private float peso;
-    private float imc;
-    @Temporal(TemporalType.DATE)
-    private Date fechaRegistro;
+    private String talla;
+    private Float altura;
+    private Float peso;
+    private Float imc;
+    private String imc_estado;
+    private Integer edad;
 }
