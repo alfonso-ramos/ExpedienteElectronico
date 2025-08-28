@@ -38,3 +38,61 @@ public class ExpElec_Main extends JFrame{
     }
 
 }
+/*
+
+private VistaPaciente vistaPaciente;
+    private VistaConsultas vistaConsultas;
+    private ConsultaServicio consultaServicio;
+    private DefaultTableModel tablaModelo;
+
+    @Autowired
+    public VistaMain(VistaConsultas vistaConsultas, VistaPaciente vistaPaciente, ConsultaServicio consultaServicio) {
+        this.vistaConsultas = vistaConsultas;
+        this.vistaPaciente = vistaPaciente;
+        this.consultaServicio = consultaServicio;
+
+
+        initComponents();
+    }
+
+    public void iniciarTabla(){
+
+        this.tablaModelo = new DefaultTableModel(0, 12){
+            @Override
+            public boolean isCellEditable(int row,int column){return false;}
+        };
+
+        String[] nombresColumnas = {"Id","Paciente","Diagnostico","Medicamento","Fecha de registro","Observaciones","Talla","Imc","Estado","Edad"};
+
+        this.tablaModelo.setColumnIdentifiers(nombresColumnas);
+        this.tabla.setModel(tablaModelo);
+        this.tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        listar();
+    }
+
+    public void listar(){
+        this.tablaModelo.setRowCount(0);
+
+        List<Consulta> consultas = consultaServicio.listarConsultas();
+
+        consultas.forEach(consulta -> {
+
+            Object[] renglon ={
+                    consulta.getIdConsulta(),
+                    consulta.getPaciente(),
+                    consulta.getDiagnostico(),
+                    consulta.getMedicamento(),
+                    consulta.getFechaReg(),
+                    consulta.getObservaciones(),
+                    consulta.getTalla(),
+                    consulta.getAltura(),
+                    consulta.getPeso(),
+                    consulta.getImc(),
+                    consulta.getImc_estado(),
+                    consulta.getEdad()
+            };
+            tablaModelo.addRow(renglon);
+        });
+    }
+ */
