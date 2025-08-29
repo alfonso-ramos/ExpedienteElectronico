@@ -3,6 +3,7 @@ package rmp.expediente_electronico.servicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rmp.expediente_electronico.modelo.Consulta;
+import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.repositorio.ConsultaRepositorio;
 
 import java.util.List;
@@ -28,5 +29,9 @@ public class ConsultaServicio {
 
     public Consulta buscarPorId(Integer id){
         return consultaRepositorio.findById(id).orElse(null);
+    }
+
+    public List<Consulta> buscarConsultaPacientes(List<Paciente> pacientes){
+        return consultaRepositorio.findByPacienteIn(pacientes);
     }
 }

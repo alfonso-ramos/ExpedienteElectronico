@@ -144,8 +144,7 @@ public class VistaConsulta extends javax.swing.JFrame {
            mostrarMensaje("Consulta Modificada");
         }
 
-        limpiarFormulario();
-        listar();
+        regresar();
     }
 
     public void limpiarFormulario(){
@@ -194,6 +193,29 @@ public class VistaConsulta extends javax.swing.JFrame {
 
         var pacientes = pacienteServicio.buscarPacientes(buscarField.getText());
         llenarPacientesBox(pacientes);
+    }
+
+    public void modificarTextoGuardar(String texto){
+        guardarButton.setText(texto);
+    }
+
+    public void rellenar(Consulta consulta){
+        this.consulta = consulta;
+
+        pacientesComboBox.setSelectedItem(consulta.getPaciente());
+        diagnosticoField.setText(consulta.getDiagnostico());
+        observacionesField.setText(consulta.getObservaciones());
+        medicamentoField.setText(consulta.getMedicamento());
+        tallaComboBox.setSelectedItem(consulta.getTalla());
+        alturaSpinner.setValue(consulta.getAltura());
+        pesoSpinner.setValue(consulta.getPeso());
+    }
+
+    public void regresar(){
+        this.setVisible(false);
+        limpiarFormulario();
+        vistaMain.listarConsultas();
+        vistaMain.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -390,9 +412,7 @@ public class VistaConsulta extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void regresarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
-        this.setVisible(false);
-        vistaMain.listar();
-        vistaMain.setVisible(true);
+        regresar();
     }//GEN-LAST:event_regresarButtonActionPerformed
 
     private void buscarFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscarFieldKeyTyped
