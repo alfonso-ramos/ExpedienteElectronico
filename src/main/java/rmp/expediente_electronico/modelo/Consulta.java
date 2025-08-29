@@ -11,10 +11,11 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
+@Table (name = "Consulta")
 public class Consulta {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idConsulta;
 
     @ManyToOne

@@ -166,11 +166,13 @@ public class VistaMain extends javax.swing.JFrame {
 
     private void pacienteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pacienteButtonActionPerformed
         this.setVisible(false);
+        vistaPaciente.setLocationRelativeTo(this);
         vistaPaciente.setVisible(true);
     }//GEN-LAST:event_pacienteButtonActionPerformed
 
     private void consultaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consultaButtonActionPerformed
         this.setVisible(false);
+        vistaConsulta.setLocationRelativeTo(this);
         vistaConsulta.setVisible(true);
     }//GEN-LAST:event_consultaButtonActionPerformed
 

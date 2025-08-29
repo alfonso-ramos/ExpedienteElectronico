@@ -33,6 +33,7 @@ public class ExpedienteElectronicoApplication {
 		// Crear objeto de Swing
 		SwingUtilities.invokeLater(() -> {
 			VistaMain vistaMain = contextoSpring.getBean(VistaMain.class);
+			vistaMain.setLocationRelativeTo(null);
 			vistaMain.setVisible(true);
 		});
 		

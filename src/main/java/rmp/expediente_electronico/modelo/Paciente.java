@@ -9,7 +9,6 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
 public class Paciente {
     @Id
@@ -22,4 +21,9 @@ public class Paciente {
     private String programaAcademico;
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
+
+    @Override
+    public String toString(){
+        return matricula.concat(" - ".concat(nombres).concat(" ".concat(apellidos)));
+    }
 }
