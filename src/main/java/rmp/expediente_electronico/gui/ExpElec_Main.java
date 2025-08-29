@@ -1,5 +1,6 @@
 package rmp.expediente_electronico.gui;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +10,13 @@ import java.awt.event.ActionListener;
 
 @Component
 public class ExpElec_Main extends JFrame{
+
     private JPanel panelPrincipal;
     private JButton pacientesButton;
     private JButton consultasButton;
     private JButton generarReporteButton;
     private JTable table1;
+
     private ExpElec_PacientesForma pacientesForma;
 
     @Autowired

@@ -10,10 +10,7 @@ import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import java.awt.event.*;
-
 import java.sql.Date;
-
-
 import java.util.List;
 
 @Component
@@ -44,8 +41,6 @@ public class    ExpElec_PacientesForma extends JFrame{
         iniciarForma();
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
-
-
         pacientesTabla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -221,6 +216,7 @@ public class    ExpElec_PacientesForma extends JFrame{
         carreraComboBox.setModel(modelo);
     }
 
+
     /*
     private void cargarPacienteSeleccionado(){
         var renglon = pacientesTabla.getSelectedRow();
@@ -239,6 +235,7 @@ public class    ExpElec_PacientesForma extends JFrame{
             this.FechaNacimiento.setDate((Date) fechaNac);
         }
     }
+
      */
 
     private void mostrarMensaje(String mensaje){
