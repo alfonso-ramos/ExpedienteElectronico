@@ -6,6 +6,7 @@ import rmp.expediente_electronico.modelo.Consulta;
 import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.repositorio.ConsultaRepositorio;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,5 +34,9 @@ public class ConsultaServicio {
 
     public List<Consulta> buscarConsultaPacientes(List<Paciente> pacientes){
         return consultaRepositorio.findByPacienteIn(pacientes);
+    }
+
+    public List<Consulta> buscarPorFecha(Date inicio, Date fin){
+        return consultaRepositorio.findByFechaRegBetween(inicio,fin);
     }
 }

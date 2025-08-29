@@ -22,16 +22,19 @@ public class VistaMain extends javax.swing.JFrame {
     private ConsultaServicio consultaServicio;
     private DefaultTableModel tablaModelo;
     private PacienteServicio pacienteServicio;
+    private VistaReporte vistaReporte;
 
     @Autowired
-    public VistaMain(VistaConsulta vistaConsulta, VistaPaciente vistaPaciente, ConsultaServicio consultaServicio, PacienteServicio pacienteServicio) {
+    public VistaMain(VistaConsulta vistaConsulta, VistaPaciente vistaPaciente,VistaReporte vistaReporte, ConsultaServicio consultaServicio, PacienteServicio pacienteServicio) {
         this.vistaConsulta = vistaConsulta;
         this.vistaPaciente = vistaPaciente;
+        this.vistaReporte = vistaReporte;
         this.consultaServicio = consultaServicio;
         this.pacienteServicio = pacienteServicio;
 
         this.vistaPaciente.setVistaMain(this);
         this.vistaConsulta.setVistaMain(this);
+        this.vistaReporte.setVistaMain(this);
 
         initComponents();
         iniciarTabla();
@@ -120,6 +123,7 @@ public class VistaMain extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         buscarConsultaField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -170,6 +174,8 @@ public class VistaMain extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("Buscar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -191,7 +197,8 @@ public class VistaMain extends javax.swing.JFrame {
                         .addGap(81, 81, 81)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 730, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buscarConsultaField, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(buscarConsultaField, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))))
                 .addContainerGap(121, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -204,7 +211,9 @@ public class VistaMain extends javax.swing.JFrame {
                     .addComponent(pacienteButton)
                     .addComponent(consultaButton)
                     .addComponent(reporteButton))
-                .addGap(32, 32, 32)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addGap(3, 3, 3)
                 .addComponent(buscarConsultaField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -228,7 +237,9 @@ public class VistaMain extends javax.swing.JFrame {
     }//GEN-LAST:event_consultaButtonActionPerformed
 
     private void reporteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteButtonActionPerformed
-        // TODO add your handling code here:
+        setVisible(false);
+        vistaReporte.setLocationRelativeTo(this);
+        vistaReporte.setVisible(true);
     }//GEN-LAST:event_reporteButtonActionPerformed
 
     private void buscarConsultaFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscarConsultaFieldKeyTyped
@@ -243,6 +254,7 @@ public class VistaMain extends javax.swing.JFrame {
     private javax.swing.JTextField buscarConsultaField;
     private javax.swing.JButton consultaButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton pacienteButton;
     private javax.swing.JButton reporteButton;
