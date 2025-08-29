@@ -29,14 +29,17 @@ public class ExpElec_PacienteEdicion extends JFrame{
     private ExpElec_PacientesForma vistaPacientes;
 
     @Autowired
-    public ExpElec_PacienteEdicion(PacienteServicio pacienteServicio, ExpElec_PacientesForma vistaPacientes){
+    public ExpElec_PacienteEdicion(PacienteServicio pacienteServicio){
         this.pacienteServicio = pacienteServicio;
         this.paciente = paciente;
-        this.vistaPacientes = vistaPacientes;
         iniciarForma();
         regresarButton.addActionListener(actionEvent -> vistaPacientes.cerrarEdicion());
         editarButton.addActionListener(actionEvent -> actualizarPaciente());
         eliminarButton.addActionListener(actionEvent -> eliminarPaciente());
+    }
+
+    public void setVistaPacientes(ExpElec_PacientesForma pacientesForma){
+        this.vistaPacientes = pacientesForma;
     }
 
     public void setPaciente(Paciente paciente){
@@ -61,7 +64,19 @@ public class ExpElec_PacienteEdicion extends JFrame{
     }
 
     public void iniciarProgramasAcademicos(){
-        String[] programas = {"Tecnologías", "Mecatrónica"};
+        String[] programas = {
+                "Ingeniería en Tecnologías de la Información e Innovación digital",
+                "Ingeniería en BiotecnologÍa",
+                "Ingeniería Mecatrónica",
+                "Ingeniería en Energía y Desarrollo Sostenible",
+                "Ingeniería ambiental y sustentabilidad",
+                "Ingeniería en Logística",
+                "Ingeniería Biomédica",
+                "Ingeniería en animación y efectos visuales",
+                "Ingeniería en Nanotecnología",
+                "Licenciatura en Terapia Física",
+                "Licenciatura en administración"
+        };
         DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
         carreraComboBox.setModel(modelo);
     }

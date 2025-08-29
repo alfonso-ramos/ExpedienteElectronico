@@ -7,7 +7,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import rmp.expediente_electronico.gui.ExpElec_Main;
 import rmp.expediente_electronico.gui.ExpElec_PacientesForma;
+import rmp.expediente_electronico.gui.VistaMain;
 
 import javax.swing.*;
 
@@ -30,8 +32,9 @@ public class ExpedienteElectronicoApplication {
 						.run(args);
 		// Crear objeto de Swing
 		SwingUtilities.invokeLater(() -> {
-			ExpElec_PacientesForma expElecPacientesForma = contextoSpring.getBean(ExpElec_PacientesForma.class);
-			expElecPacientesForma.setVisible(true);
+			VistaMain vistaMain = contextoSpring.getBean(VistaMain.class);
+			vistaMain.setLocationRelativeTo(null);
+			vistaMain.setVisible(true);
 		});
 		
 	}
