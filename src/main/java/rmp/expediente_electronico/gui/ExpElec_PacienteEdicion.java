@@ -23,7 +23,7 @@ public class ExpElec_PacienteEdicion extends JFrame{
     private JTextField nombresTexto;
     private JTextField apellidosTexto;
     private JDateChooser fechaNac;
-    private JComboBox carreraComboBox;
+    private JComboBox<String> carreraComboBox;
     private IPacienteServicio pacienteServicio;
     private Paciente paciente;
     private ExpElec_PacientesForma vistaPacientes;

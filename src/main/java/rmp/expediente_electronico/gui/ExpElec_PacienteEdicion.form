@@ -161,6 +161,7 @@
                 </constraints>
                 <properties>
                   <font/>
+                  <model/>
                 </properties>
               </component>
               <vspacer id="6956e">

@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: expediente_elec-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword   # Cambia esto por algo más seguro
+      MYSQL_DATABASE: mydb                # Se crea automáticamente
+      MYSQL_USER: myuser                  # Usuario adicional
+      MYSQL_PASSWORD: mypassword          # Contraseña del usuario
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql   # Persistencia de datos
+
+volumes:
+  db_data:
