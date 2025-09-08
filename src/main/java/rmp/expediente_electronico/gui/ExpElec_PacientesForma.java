@@ -19,7 +19,7 @@ public class    ExpElec_PacientesForma extends JFrame{
     private JTable pacientesTabla;
     private JTextField NombreTexto;
     private JTextField ApellidoTexto;
-    private JComboBox carreraComboBox;
+    private JComboBox<String> carreraComboBox;
     private JDateChooser FechaNacimiento;
     private JButton guardarButton;
     private JButton limpiarButton;
@@ -38,10 +38,13 @@ public class    ExpElec_PacientesForma extends JFrame{
         this.pacienteServicio = pacienteServicio;
         this.vistaEdicion = pacienteEdicion;
         pacienteEdicion.setVistaPacientes(this);
+        createUIComponents();  // Asegurarnos de que los componentes están inicializados
         iniciarForma();
+        
+        // Configurar los listeners después de que los componentes estén inicializados
         guardarButton.addActionListener(actionEvent -> guardarPaciente());
         limpiarButton.addActionListener(actionEvent -> limpiarFormulario());
-        pacientesTabla.addMouseListener(new MouseAdapter() {
+    pacientesTabla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -75,27 +78,58 @@ public class    ExpElec_PacientesForma extends JFrame{
     }
 
     private void iniciarForma(){
-        iniciarProgramasAcademicos();
-        setTitle("Gestion de Pacientes");
-        setContentPane(panelPrincipal);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setTitle("Gestion de Pacientes");
+    setContentPane(panelPrincipal);
+    setSize(800, 600);
+    setLocationRelativeTo(null);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void createUIComponents() {
-        // evitar la edicion de tablas
+        // Inicializar el panel principal
+        panelPrincipal = new JPanel();
+        
+        // Inicializar los botones
+        guardarButton = new JButton("Guardar");
+        limpiarButton = new JButton("Limpiar");
+        regresarButton = new JButton("Regresar");
+        
+        // Inicializar campos de texto
+        MatriculaTexto = new JTextField();
+        NombreTexto = new JTextField();
+        ApellidoTexto = new JTextField();
+        buscarPacienteTextField = new JTextField();
+        
+        // Inicializar el chooser de fecha
+        FechaNacimiento = new JDateChooser();
+        
+        // Crear el combo box con su modelo
+        carreraComboBox = new JComboBox<>();
+        String[] programas = {
+                "Ingeniería en Tecnologías de la Información e Innovación digital",
+                "Ingeniería en BiotecnologÍa",
+                "Ingeniería Mecatrónica",
+                "Ingeniería en Energía y Desarrollo Sostenible",
+                "Ingeniería ambiental y sustentabilidad",
+                "Ingeniería en Logística",
+                "Ingeniería Biomédica",
+                "Ingeniería en animación y efectos visuales",
+                "Ingeniería en Nanotecnología",
+                "Licenciatura en Terapia Física",
+                "Licenciatura en administración"
+        };
+        DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
+        carreraComboBox.setModel(modelo);
+
+        // Inicializar la tabla
         this.tablaModeloPacientes = new DefaultTableModel(0, 6){
             @Override
             public boolean isCellEditable(int row,int column){return false;}
         };
-
         String[] nombresColumnas = {"ID", "Matricula", "Nombre", "Apellido", "Carrera","Fecha nacimiento"};
         this.tablaModeloPacientes.setColumnIdentifiers(nombresColumnas);
         this.pacientesTabla = new JTable(tablaModeloPacientes);
         this.pacientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        //Cargar listado de pacientes
         listarPacientes();
     }
 

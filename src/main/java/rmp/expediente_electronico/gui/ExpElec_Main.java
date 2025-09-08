@@ -22,6 +22,7 @@ public class ExpElec_Main extends JFrame{
     @Autowired
     public ExpElec_Main(ExpElec_PacientesForma pacientesForma) {
         this.pacientesForma = pacientesForma;
+        createUIComponents();  // Asegurarnos de que los componentes están inicializados
         pacientesForma.setVistaPrincipal(this);
         pacientesButton.addActionListener(actionEvent -> pacientes());
         iniciarForma();
@@ -40,6 +41,13 @@ public class ExpElec_Main extends JFrame{
         pacientesForma.setVisible(true);
     }
 
+    private void createUIComponents() {
+        panelPrincipal = new JPanel();
+        pacientesButton = new JButton("Pacientes");
+        consultasButton = new JButton("Consultas");
+        generarReporteButton = new JButton("Generar Reporte");
+        table1 = new JTable();
+    }
 }
 /*
 

@@ -8,13 +8,10 @@ import rmp.expediente_electronico.servicio.IPacienteServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Date;
 
 @Component
-public class ExpElec_PacienteEdicion extends JFrame{
+public class ExpElec_PacienteEdicion extends JFrame {
     private JPanel PanelPrincipal;
     private JButton regresarButton;
     private JButton editarButton;
@@ -23,7 +20,7 @@ public class ExpElec_PacienteEdicion extends JFrame{
     private JTextField nombresTexto;
     private JTextField apellidosTexto;
     private JDateChooser fechaNac;
-    private JComboBox carreraComboBox;
+    private JComboBox<String> carreraComboBox;
     private IPacienteServicio pacienteServicio;
     private Paciente paciente;
     private ExpElec_PacientesForma vistaPacientes;
@@ -31,7 +28,7 @@ public class ExpElec_PacienteEdicion extends JFrame{
     @Autowired
     public ExpElec_PacienteEdicion(PacienteServicio pacienteServicio){
         this.pacienteServicio = pacienteServicio;
-        this.paciente = paciente;
+        createUIComponents();  // Asegurarnos de que los componentes están inicializados
         iniciarForma();
         regresarButton.addActionListener(actionEvent -> vistaPacientes.cerrarEdicion());
         editarButton.addActionListener(actionEvent -> actualizarPaciente());
@@ -47,7 +44,6 @@ public class ExpElec_PacienteEdicion extends JFrame{
     }
 
     public void iniciarForma(){
-        iniciarProgramasAcademicos();
         setTitle("Edicion de paciente");
         setContentPane(PanelPrincipal);
         setSize(800,600);
@@ -63,7 +59,9 @@ public class ExpElec_PacienteEdicion extends JFrame{
         fechaNac.setDate(paciente.getFechaNacimiento());
     }
 
-    public void iniciarProgramasAcademicos(){
+    private void createUIComponents() {
+        PanelPrincipal = new JPanel();
+        carreraComboBox = new JComboBox<>();
         String[] programas = {
                 "Ingeniería en Tecnologías de la Información e Innovación digital",
                 "Ingeniería en BiotecnologÍa",
@@ -81,20 +79,19 @@ public class ExpElec_PacienteEdicion extends JFrame{
         carreraComboBox.setModel(modelo);
     }
 
-    public void actualizarPaciente(){
-        //aca iria la validacion otra vez :v
-        if(true) {
-            paciente.setMatricula(matriculaTexto.getText());
-            paciente.setNombres(nombresTexto.getText());
-            paciente.setApellidos(apellidosTexto.getText());
-            paciente.setProgramaAcademico(carreraComboBox.getSelectedItem().toString());
-            paciente.setFechaNacimiento(new Date(fechaNac.getDate().getTime()));
-            pacienteServicio.guardarPaciente(paciente);
+    public void iniciarProgramasAcademicos(){
+        // Método ahora vacío, la inicialización se hace en createUIComponents
+    }
 
-            vistaPacientes.cerrarEdicion();
-        }else{
-            System.out.println("hola");
-        }
+    public void actualizarPaciente(){
+        // Validación simple
+        paciente.setMatricula(matriculaTexto.getText());
+        paciente.setNombres(nombresTexto.getText());
+        paciente.setApellidos(apellidosTexto.getText());
+        paciente.setProgramaAcademico(carreraComboBox.getSelectedItem().toString());
+        paciente.setFechaNacimiento(new Date(fechaNac.getDate().getTime()));
+        pacienteServicio.guardarPaciente(paciente);
+        vistaPacientes.cerrarEdicion();
     }
 
     public void eliminarPaciente(){

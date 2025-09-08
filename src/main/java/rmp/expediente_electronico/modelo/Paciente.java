@@ -10,6 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Table(name = "pacientes")
 public class Paciente {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)

@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-@Table (name = "Consulta")
+@Table (name = "consultas")
 public class Consulta {
 
     @Id
