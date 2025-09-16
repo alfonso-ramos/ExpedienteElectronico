@@ -163,6 +163,10 @@ public class VistaPaciente extends javax.swing.JFrame {
 
     public void iniciarProgramasAcademicos(){
         String[] programas = {
+                "Docente",
+                "Recursos humanos (RRHH)",
+                "Intendencia",
+                "Maestrias",
                 "Ingeniería en Tecnologías de la Información e Innovación digital",
                 "Ingeniería en BiotecnologÍa",
                 "Ingeniería Mecatrónica",
@@ -187,45 +191,97 @@ public class VistaPaciente extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        bg = new javax.swing.JPanel();
         regresarButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         matriculaTexto = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        fechaNacimiento = new com.toedter.calendar.JDateChooser();
         jLabel3 = new javax.swing.JLabel();
         nombresTexto = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         apellidosTexto = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        fechaNacimiento = new com.toedter.calendar.JDateChooser();
         carrerasComboBox = new javax.swing.JComboBox<>();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tabla = new javax.swing.JTable();
         guardarButton = new javax.swing.JButton();
         limpiarButton = new javax.swing.JButton();
         modificarButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabla = new javax.swing.JTable();
         buscarPacienteField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("vista paciente");
+        bg.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        regresarButton.setBackground(new java.awt.Color(255, 51, 51));
+        regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        regresarButton.setForeground(new java.awt.Color(255, 255, 255));
         regresarButton.setText("Regresar");
         regresarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 regresarButtonActionPerformed(evt);
             }
         });
+        bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 43, 120, 40));
 
-        jLabel2.setText("matricula");
+        jLabel2.setText("Matrícula");
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, -1, -1));
+        bg.add(matriculaTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 136, -1));
 
-        jLabel3.setText("nombres");
+        jLabel6.setText("Fecha de nacimiento");
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, -1, -1));
+        bg.add(fechaNacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 190, 136, -1));
 
-        jLabel4.setText("apellidos");
+        jLabel3.setText("Nombres");
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 240, -1, -1));
+        bg.add(nombresTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 270, 491, 33));
 
-        jLabel5.setText("carrera");
+        jLabel4.setText("Apellidos");
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 330, -1, -1));
+        bg.add(apellidosTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, 491, 35));
 
-        jLabel6.setText("fecha de nacimiento");
+        jLabel5.setText("Programa académico");
+        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, -1, -1));
+
+        carrerasComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                carrerasComboBoxActionPerformed(evt);
+            }
+        });
+        bg.add(carrerasComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 368, 34));
+
+        guardarButton.setBackground(new java.awt.Color(26, 188, 156));
+        guardarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        guardarButton.setForeground(new java.awt.Color(255, 255, 255));
+        guardarButton.setText("Guardar");
+        guardarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarButtonActionPerformed(evt);
+            }
+        });
+        bg.add(guardarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 640, 120, 40));
+
+        limpiarButton.setBackground(new java.awt.Color(178, 247, 233));
+        limpiarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        limpiarButton.setText("limpiar");
+        limpiarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiarButtonActionPerformed(evt);
+            }
+        });
+        bg.add(limpiarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 640, 110, 40));
+
+        modificarButton.setBackground(new java.awt.Color(95, 192, 227));
+        modificarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        modificarButton.setText("Modificar");
+        modificarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modificarButtonActionPerformed(evt);
+            }
+        });
+        bg.add(modificarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 640, 130, 40));
 
         tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -245,126 +301,24 @@ public class VistaPaciente extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tabla);
 
-        guardarButton.setText("Guardar");
-        guardarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                guardarButtonActionPerformed(evt);
-            }
-        });
-
-        limpiarButton.setText("limpiar");
-        limpiarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                limpiarButtonActionPerformed(evt);
-            }
-        });
-
-        modificarButton.setText("Modificar");
-        modificarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modificarButtonActionPerformed(evt);
-            }
-        });
+        bg.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 124, 570, 550));
 
         buscarPacienteField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 buscarPacienteFieldKeyTyped(evt);
             }
         });
+        bg.add(buscarPacienteField, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 72, 270, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(420, 420, 420)
-                        .addComponent(jLabel1)
-                        .addGap(76, 76, 76)
-                        .addComponent(buscarPacienteField, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(17, 17, 17)
-                                .addComponent(regresarButton))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(62, 62, 62)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel3)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel2)
-                                                .addGap(72, 72, 72))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(matriculaTexto)
-                                                .addGap(50, 50, 50)))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel6)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(guardarButton)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(limpiarButton)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(modificarButton))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(carrerasComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 75, Short.MAX_VALUE)
-                                        .addComponent(apellidosTexto, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(nombresTexto, javax.swing.GroupLayout.Alignment.LEADING)))))
-                        .addGap(86, 86, 86)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(50, Short.MAX_VALUE))
+            .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1258, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(jLabel1)
-                        .addGap(36, 36, 36))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(buscarPacienteField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel6))
-                                .addGap(18, 18, 18)
-                                .addComponent(matriculaTexto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3)
-                        .addGap(23, 23, 23)
-                        .addComponent(nombresTexto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(apellidosTexto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)
-                        .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(carrerasComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(guardarButton)
-                            .addComponent(limpiarButton)
-                            .addComponent(modificarButton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(regresarButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 17, Short.MAX_VALUE)))
-                .addGap(32, 32, 32))
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
         );
 
         pack();
@@ -399,13 +353,17 @@ public class VistaPaciente extends javax.swing.JFrame {
         cargarPaciente();
     }//GEN-LAST:event_tablaMouseClicked
 
+    private void carrerasComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carrerasComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_carrerasComboBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField apellidosTexto;
+    private javax.swing.JPanel bg;
     private javax.swing.JTextField buscarPacienteField;
     private javax.swing.JComboBox<String> carrerasComboBox;
     private com.toedter.calendar.JDateChooser fechaNacimiento;
     private javax.swing.JButton guardarButton;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
