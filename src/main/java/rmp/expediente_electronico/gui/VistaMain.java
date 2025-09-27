@@ -47,7 +47,7 @@ public class VistaMain extends javax.swing.JFrame {
             public boolean isCellEditable(int row,int column){return false;}
         };
 
-        String[] nombresColumnas = {"Id","Paciente","Diagnostico","Medicamento","Fecha de registro","Observaciones","Talla","Imc","Estado","Edad"};
+        String[] nombresColumnas = {"Id","Paciente","Causa de diagnostico","Diagnostico","Medicamento","Fecha de registro","Observaciones","Talla","Imc","Estado","Edad"};
 
         this.tablaModelo.setColumnIdentifiers(nombresColumnas);
         this.tabla.setModel(tablaModelo);
@@ -71,6 +71,7 @@ public class VistaMain extends javax.swing.JFrame {
             Object[] renglon ={
                     consulta.getIdConsulta(),
                     consulta.getPaciente(),
+                    consulta.getDiagnosticoKey(),
                     consulta.getDiagnostico(),
                     consulta.getMedicamento(),
                     consulta.getFechaReg(),

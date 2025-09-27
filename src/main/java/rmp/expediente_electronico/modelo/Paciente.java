@@ -22,6 +22,7 @@ public class Paciente {
     private String programaAcademico;
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
+    private String sexo;
 
     @Override
     public String toString(){

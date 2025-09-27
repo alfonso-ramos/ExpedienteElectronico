@@ -42,7 +42,7 @@ public class VistaPaciente extends javax.swing.JFrame {
             public boolean isCellEditable(int row,int column){return false;}
         };
 
-        String[] nombresColumnas = {"Id","Matricula","Nombres","Apellidos","Carrera","Fecha de nacimiento"};
+        String[] nombresColumnas = {"Id","Matricula","Nombres","Apellidos","Sexo","Carrera","Fecha de nacimiento"};
 
         this.tablaModelo.setColumnIdentifiers(nombresColumnas);
         this.tabla.setModel(tablaModelo);
@@ -66,8 +66,9 @@ public class VistaPaciente extends javax.swing.JFrame {
                     paciente.getMatricula(),
                     paciente.getNombres(),
                     paciente.getApellidos(),
+                    paciente.getSexo(),
                     paciente.getProgramaAcademico(),
-                    paciente.getFechaNacimiento()
+                    paciente.getFechaNacimiento(),
             };
             this.tablaModelo.addRow(renglonPaciente);
         });
@@ -98,6 +99,7 @@ public class VistaPaciente extends javax.swing.JFrame {
         var matricula = matriculaTexto.getText();
         var nombre = nombresTexto.getText();
         var apellido = apellidosTexto.getText();
+        var sexo = (String) sexoComboBox.getSelectedItem();
         java.sql.Date fechaNac = new java.sql.Date(fechaNacimiento.getDate().getTime());
         String programaAca = carrerasComboBox.getSelectedItem().toString();
 
@@ -106,6 +108,7 @@ public class VistaPaciente extends javax.swing.JFrame {
         paciente.setMatricula(matricula);
         paciente.setFechaNacimiento(fechaNac);
         paciente.setProgramaAcademico(programaAca);
+        paciente.setSexo(sexo);
 
         var id = paciente.getIdPaciente();
         this.pacienteServicio.guardarPaciente(paciente);
@@ -141,6 +144,7 @@ public class VistaPaciente extends javax.swing.JFrame {
             apellidosTexto.setText(paciente.getApellidos());
             carrerasComboBox.setSelectedItem(paciente.getProgramaAcademico());
             fechaNacimiento.setDate(paciente.getFechaNacimiento());
+            sexoComboBox.setSelectedItem(paciente.getSexo());
         }
     }
 //
@@ -209,6 +213,8 @@ public class VistaPaciente extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         buscarPacienteField = new javax.swing.JTextField();
+        sexoComboBox = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -310,6 +316,12 @@ public class VistaPaciente extends javax.swing.JFrame {
         });
         bg.add(buscarPacienteField, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 72, 270, 30));
 
+        sexoComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hombre", "Mujer" }));
+        bg.add(sexoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 187, 120, 30));
+
+        jLabel1.setText("Sexo");
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 160, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -364,6 +376,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> carrerasComboBox;
     private com.toedter.calendar.JDateChooser fechaNacimiento;
     private javax.swing.JButton guardarButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -375,6 +388,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private javax.swing.JButton modificarButton;
     private javax.swing.JTextField nombresTexto;
     private javax.swing.JButton regresarButton;
+    private javax.swing.JComboBox<String> sexoComboBox;
     private javax.swing.JTable tabla;
     // End of variables declaration//GEN-END:variables
 }
