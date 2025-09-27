@@ -22,6 +22,10 @@ public class Consulta {
     @JoinColumn(name = "idPaciente", referencedColumnName = "idPaciente")
     private Paciente paciente;
 
+    @ManyToOne
+    @JoinColumn(name = "idDiagnostico", referencedColumnName = "idDiagnostico")
+    private Diagnostico diagnosticoKey;
+
     private String diagnostico;
     private String medicamento;
     private Date fechaReg;
