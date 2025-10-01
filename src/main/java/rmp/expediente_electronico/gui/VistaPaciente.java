@@ -20,6 +20,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private VistaMain vistaMain;
     private DefaultTableModel tablaModelo;
     private Paciente paciente;
+    private String[] programas;
 
     @Autowired
     public VistaPaciente(PacienteServicio pacienteServicio) {
@@ -28,16 +29,20 @@ public class VistaPaciente extends javax.swing.JFrame {
 
         initComponents();
 
-        iniciarProgramasAcademicos();
         setTitle("Gestion de Pacientes");
         setLocationRelativeTo(vistaMain);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         iniciarTabla();
     }
 
+    public void setProgramas(String[] programas){
+        this.programas = programas;
+        iniciarProgramasAcademicos();
+    }
+
     public void iniciarTabla(){
 
-        this.tablaModelo = new DefaultTableModel(0, 6){
+        this.tablaModelo = new DefaultTableModel(0, 7){
             @Override
             public boolean isCellEditable(int row,int column){return false;}
         };
@@ -166,23 +171,6 @@ public class VistaPaciente extends javax.swing.JFrame {
     }
 
     public void iniciarProgramasAcademicos(){
-        String[] programas = {
-                "Docente",
-                "Recursos humanos (RRHH)",
-                "Intendencia",
-                "Maestrias",
-                "Ingeniería en Tecnologías de la Información e Innovación digital",
-                "Ingeniería en BiotecnologÍa",
-                "Ingeniería Mecatrónica",
-                "Ingeniería en Energía y Desarrollo Sostenible",
-                "Ingeniería ambiental y sustentabilidad",
-                "Ingeniería en Logística",
-                "Ingeniería Biomédica",
-                "Ingeniería en animación y efectos visuales",
-                "Ingeniería en Nanotecnología",
-                "Licenciatura en Terapia Física",
-                "Licenciatura en administración"
-        };
         DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>(programas);
         carrerasComboBox.setModel(modelo);
     }

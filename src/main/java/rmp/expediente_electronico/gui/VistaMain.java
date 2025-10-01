@@ -24,6 +24,25 @@ public class VistaMain extends javax.swing.JFrame {
     private PacienteServicio pacienteServicio;
     private VistaReporte vistaReporte;
 
+    // Programas academicos
+    private String[] programas = {
+            "Docente",
+            "Recursos humanos (RRHH)",
+            "Intendencia",
+            "Maestrias",
+            "Ingeniería en Tecnologías de la Información e Innovación digital",
+            "Ingeniería en BiotecnologÍa",
+            "Ingeniería Mecatrónica",
+            "Ingeniería en Energía y Desarrollo Sostenible",
+            "Ingeniería ambiental y sustentabilidad",
+            "Ingeniería en Logística",
+            "Ingeniería Biomédica",
+            "Ingeniería en animación y efectos visuales",
+            "Ingeniería en Nanotecnología",
+            "Licenciatura en Terapia Física",
+            "Licenciatura en administración"
+    };
+
     @Autowired
     public VistaMain(VistaConsulta vistaConsulta, VistaPaciente vistaPaciente,VistaReporte vistaReporte, ConsultaServicio consultaServicio, PacienteServicio pacienteServicio) {
         this.vistaConsulta = vistaConsulta;
@@ -36,13 +55,16 @@ public class VistaMain extends javax.swing.JFrame {
         this.vistaConsulta.setVistaMain(this);
         this.vistaReporte.setVistaMain(this);
 
+        this.vistaPaciente.setProgramas(programas);
+        this.vistaReporte.setProgramas(programas);
+
         initComponents();
         iniciarTabla();
     }
 
     public void iniciarTabla(){
 
-        this.tablaModelo = new DefaultTableModel(0, 12){
+        this.tablaModelo = new DefaultTableModel(0, 11){
             @Override
             public boolean isCellEditable(int row,int column){return false;}
         };
