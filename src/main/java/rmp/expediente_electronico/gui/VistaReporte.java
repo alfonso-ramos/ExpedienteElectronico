@@ -4,42 +4,22 @@
  */
 package rmp.expediente_electronico.gui;
 
-import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.netbeans.lib.awtextra.AbsoluteConstraints;
-import org.netbeans.lib.awtextra.AbsoluteLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import rmp.expediente_electronico.modelo.Consulta;
-import rmp.expediente_electronico.modelo.Diagnostico;
 import rmp.expediente_electronico.servicio.ConsultaServicio;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.poi.ss.usermodel.Font;
 import rmp.expediente_electronico.servicio.DiagnosticoServicio;
 import rmp.expediente_electronico.servicio.ReporteServicio;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Component
 public class VistaReporte extends JFrame {
 
-    private static final Logger logger = Logger.getLogger(VistaReporte.class.getName());
-
-    private ConsultaServicio consultaServicio;
-    private DiagnosticoServicio diagnosticoServicio;
     private ReporteServicio reporteServicio;
     @Setter
     private VistaMain vistaMain;
@@ -52,9 +32,7 @@ public class VistaReporte extends JFrame {
     final short ALTURA_SUBTITULO = 600;
 
     @Autowired
-    public VistaReporte(ConsultaServicio consultaServicio, DiagnosticoServicio diagnosticoServicio, ReporteServicio reporteServicio){
-        this. diagnosticoServicio = diagnosticoServicio;
-        this.consultaServicio = consultaServicio;
+    public VistaReporte(ReporteServicio reporteServicio){
         this.reporteServicio = reporteServicio;
 
         initComponents();
@@ -81,6 +59,14 @@ public class VistaReporte extends JFrame {
         reporteServicio.generarReporteFecha(inicio,fin);
     }
 
+    public void generarReporteMensual(){
+
+        int mes = mesReporteMensualChooser.getMonth() + 1;
+        int year = yearReporteMensualChooser.getYear();
+
+        reporteServicio.generarReporteMensual(mes, year);
+    }
+
     public void mostrarMensaje(String texto) {
         JOptionPane.showMessageDialog(this, texto);
     }
@@ -98,13 +84,14 @@ public class VistaReporte extends JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jMonthChooser1 = new com.toedter.calendar.JMonthChooser();
+        mesReporteMensualChooser = new com.toedter.calendar.JMonthChooser();
         generarAnualButton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        jYearChooser1 = new com.toedter.calendar.JYearChooser();
+        yearReporteAnualChooser = new com.toedter.calendar.JYearChooser();
         jLabel7 = new javax.swing.JLabel();
         generarMensualButton = new javax.swing.JButton();
         generarPorFechaButton = new javax.swing.JButton();
+        yearReporteMensualChooser = new com.toedter.calendar.JYearChooser();
         jPanel1 = new javax.swing.JPanel();
         regresarButton = new javax.swing.JButton();
 
@@ -134,7 +121,7 @@ public class VistaReporte extends JFrame {
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel5.setText("Fecha de inicio");
         bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
-        bg.add(jMonthChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 170, 180, 40));
+        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 170, 180, 40));
 
         generarAnualButton.setBackground(new java.awt.Color(26, 188, 156));
         generarAnualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -150,7 +137,7 @@ public class VistaReporte extends JFrame {
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel6.setText("Generar reporte por mes");
         bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 60, -1, 50));
-        bg.add(jYearChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 600, 140, 50));
+        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 600, 140, 50));
 
         jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel7.setText("Mes");
@@ -177,6 +164,7 @@ public class VistaReporte extends JFrame {
             }
         });
         bg.add(generarPorFechaButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
+        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 160, 120, 50));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
@@ -235,7 +223,7 @@ public class VistaReporte extends JFrame {
     }//GEN-LAST:event_generarAnualButtonActionPerformed
 
     private void generarMensualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarMensualButtonActionPerformed
-        // TODO add your handling code here:
+        generarReporteMensual();
     }//GEN-LAST:event_generarMensualButtonActionPerformed
 
     private void generarPorFechaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorFechaButtonActionPerformed
@@ -256,9 +244,10 @@ public class VistaReporte extends JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private com.toedter.calendar.JMonthChooser jMonthChooser1;
     private javax.swing.JPanel jPanel1;
-    private com.toedter.calendar.JYearChooser jYearChooser1;
+    private com.toedter.calendar.JMonthChooser mesReporteMensualChooser;
     private javax.swing.JButton regresarButton;
+    private com.toedter.calendar.JYearChooser yearReporteAnualChooser;
+    private com.toedter.calendar.JYearChooser yearReporteMensualChooser;
     // End of variables declaration//GEN-END:variables
 }

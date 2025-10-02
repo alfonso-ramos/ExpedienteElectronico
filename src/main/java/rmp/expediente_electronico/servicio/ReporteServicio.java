@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +46,7 @@ public class ReporteServicio {
         var consultas = consultaServicio.buscarPorFecha(inicio, fin);
         var diagosticos = diagnosticoServicio.listarDiagnosticos();
         SimpleDateFormat sdp = new SimpleDateFormat("d-MMMM-yyyy");
-        String nombreArchivo = "reporte ".concat(sdp.format(inicio).concat(" ".concat(sdp.format(fin))));
+        String nombreArchivo = "EXPELEC reporte ".concat(sdp.format(inicio).concat(" ".concat(sdp.format(fin))));
 
         try {
 
@@ -71,7 +74,8 @@ public class ReporteServicio {
                 workbook = new XSSFWorkbook();
 
                 // Generar los reportes
-                generarReporteConsultas(consultas, diagosticos, workbook,sdp.format(inicio),sdp.format(fin));
+                String titulo =  sdp.format(inicio).concat(" / ").concat(sdp.format(fin));
+                generarReporteConsultas(consultas, diagosticos, workbook, titulo);
                 generarEstadisticasConsultas(workbook,consultas,diagosticos,sdp.format(inicio),sdp.format(fin));
             }
 
@@ -85,12 +89,12 @@ public class ReporteServicio {
 
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null,"Error al generar el reporte: " + e.getMessage());
+            mostrarMensaje("Error al generar el report: e" + e.getMessage());
         }
     }
 
 
-    public void generarReporteConsultas(List<Consulta> consultas, List<Diagnostico> diagnosticos, Workbook workbook, String fechaInicio, String fechaFin) throws IOException {
+    public void generarReporteConsultas(List<Consulta> consultas, List<Diagnostico> diagnosticos, Workbook workbook, String titulo) throws IOException {
 
         Sheet sheet = workbook.createSheet("Consultas");
 
@@ -120,7 +124,7 @@ public class ReporteServicio {
         tituloRow.setHeight(ALTURA_TITULO_PRINCIPAL);
         Cell tituloCell = tituloRow.createCell(0);
         tituloCell.setCellStyle(estiloTituloPrincipal);
-        tituloCell.setCellValue("Consultas: ".concat(fechaInicio).concat(" / ".concat(fechaFin)));
+        tituloCell.setCellValue("Consultas: ".concat(titulo));
         for (int i = 1; i<13;i++){
             tituloRow.createCell(i).setCellStyle(estiloNegro);
         }
@@ -394,6 +398,66 @@ public class ReporteServicio {
         return  rowNum;
     }
 
+    public void generarReporteMensual(int mes, int year){
+        // 2. Definir el rango del mes para la consulta a la base de datos
+        LocalDate startOfMonth = LocalDate.of(year, mes, 1);
+        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+
+        // Convertir a java.util.Date para tu servicio de consulta (si usa el tipo antiguo)
+        java.util.Date inicio = java.util.Date.from(startOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.util.Date fin = java.util.Date.from(endOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        // 3. Consulta de datos (la consulta debe usar el rango completo del mes)
+        var consultas = consultaServicio.buscarPorFecha(inicio, fin);
+        var diagnosticos = diagnosticoServicio.listarDiagnosticos();
+        // 4. Preparar nombre del archivo
+        SimpleDateFormat sdp = new SimpleDateFormat("MMMM-yyyy");
+        String nombreArchivo = "EXPELEC reporte_mensual_".concat(sdp.format(inicio));
+
+        try {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar reporte de consultas");
+            fileChooser.setSelectedFile(new File(nombreArchivo));
+
+            // Filtro pa’ solo mostrar .xlsx
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos Excel (*.xlsx)", "xlsx"));
+
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            String rutaArchivo = "";
+            Workbook workbook = null;
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File archivoSeleccionado = fileChooser.getSelectedFile();
+
+                // Asegurar que termine con .xlsx
+                rutaArchivo = archivoSeleccionado.getAbsolutePath();
+                if (!rutaArchivo.toLowerCase().endsWith(".xlsx")) {
+                    rutaArchivo += ".xlsx";
+                }
+
+                // Creamos el workbook (archivo Excel)
+                workbook = new XSSFWorkbook();
+
+                // Generar los reportes
+                String titulo = sdp.format(inicio);
+                generarReporteConsultas(consultas,diagnosticos,workbook,titulo);
+            }
+
+            // Guardar archivo
+            try (FileOutputStream fileOut = new FileOutputStream(rutaArchivo)) {
+                assert workbook != null;
+                workbook.write(fileOut);
+            }
+            workbook.close();
+            JOptionPane.showMessageDialog(null, "Reporte guardado en:\n" + rutaArchivo);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarMensaje("Error al generar el report: e" + e.getMessage());
+        }
+    }
+
     private CellStyle crearEstiloTitulo(Workbook workbook){
         CellStyle estiloTituloPrincipal = workbook.createCellStyle();
         Font fontTitulo = workbook.createFont();
@@ -446,6 +510,10 @@ public class ReporteServicio {
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
+    }
+
+    public void mostrarMensaje(String mensaje){
+        JOptionPane.showMessageDialog(null, mensaje);
     }
 
     // Este código debe ir en tu método de inicialización o en el servicio
