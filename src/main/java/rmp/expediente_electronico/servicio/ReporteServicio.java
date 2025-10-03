@@ -3,6 +3,7 @@ package rmp.expediente_electronico.servicio;
 import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.WeekFields;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -442,6 +442,7 @@ public class ReporteServicio {
                 // Generar los reportes
                 String titulo = sdp.format(inicio);
                 generarReporteConsultas(consultas,diagnosticos,workbook,titulo);
+                generarEstadisticasMensuales(workbook,consultas,titulo,startOfMonth, diagnosticos);
             }
 
             // Guardar archivo
@@ -456,6 +457,411 @@ public class ReporteServicio {
             e.printStackTrace();
             mostrarMensaje("Error al generar el report: e" + e.getMessage());
         }
+    }
+
+    private void generarEstadisticasMensuales(Workbook workbook, List<Consulta> consultas, String titulo, LocalDate startOfMonth, List<Diagnostico> diagnosticos){
+        Sheet sheet = workbook.createSheet("Estadisticas");
+
+        // 1. ESTILO PARA EL TÍTULO PRINCIPAL (Fondo Oscuro, Letra Blanca, 24px)
+        CellStyle estiloTituloPrincipal = crearEstiloTitulo(workbook);
+
+
+        // 2. ESTILO PARA SUBTÍTULOS / ENCABEZADOS DE SECCIÓN (Negro, 16px, Fondo Blanco)
+        CellStyle estiloSubtitulo = crearEstiloSubtitulo(workbook);
+
+
+        // 3. ESTILO NORMAL (Letra 14px y Bordes en todas las direcciones)
+        CellStyle estiloNormal = crearEstiloNormal(workbook);
+
+        // estilo negro
+        CellStyle estiloNegro = crearEstiloNegro(workbook);
+
+        int rowNum = 0;
+        Row tituloRow = sheet.createRow(rowNum++);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue(titulo);
+        tituloCell.setCellStyle(estiloTituloPrincipal);
+        tituloRow.createCell(1).setCellStyle(estiloTituloPrincipal);
+        tituloRow.setHeight(ALTURA_TITULO_PRINCIPAL);
+
+        // Semanas
+        Row semanasRow = sheet.createRow(rowNum++);
+        semanasRow.setHeight(ALTURA_SUBTITULO);
+        Cell subtituloCell = semanasRow.createCell(0);
+        subtituloCell.setCellValue("SEMANAS");
+        subtituloCell.setCellStyle(estiloSubtitulo);
+        Cell totalConsultas = semanasRow.createCell(1);
+        totalConsultas.setCellValue(consultas.size());
+        totalConsultas.setCellStyle(estiloNormal);
+
+        var consultasSemanas = agruparConsultasPorSemana(consultas, startOfMonth);
+        for(int i=1;i<=consultasSemanas.size();i++){
+            Cell semana = semanasRow.createCell(i);
+            Cell tituloNegro = tituloRow.createCell(i);
+            semana.setCellValue("Semana ".concat(String.valueOf(i)));
+            semana.setCellStyle(estiloSubtitulo);
+            tituloNegro.setCellStyle(estiloNegro);
+        }
+        Cell totalTituloCell = semanasRow.createCell(consultasSemanas.size()+1);
+        totalTituloCell.setCellValue("Total");
+        totalTituloCell.setCellStyle(estiloSubtitulo);
+        tituloRow.createCell(consultasSemanas.size()+1).setCellStyle(estiloNegro);
+
+        // totales
+        Row totalesRow = sheet.createRow(rowNum++);
+        totalesRow.setHeight(ALTURA_SUBTITULO);
+        Cell totalesCell = totalesRow.createCell(0);
+        totalesCell.setCellValue("TOTAL");
+        totalesCell.setCellStyle(estiloSubtitulo);
+
+        for(int i=1;i<=consultasSemanas.size();i++){
+            Cell semana = totalesRow.createCell(i);
+            semana.setCellValue(consultasSemanas.get("Semana "+i).size());
+            semana.setCellStyle(estiloNormal);
+        }
+        Cell totalConsultasCell = totalesRow.createCell(consultasSemanas.size()+1);
+        totalConsultasCell.setCellValue(consultas.size());
+        totalConsultasCell.setCellStyle(estiloNormal);
+
+
+
+        //Inician las impresiones
+
+        rowNum = escribirSeccionDiagnosticoMensual(
+                sheet,
+                rowNum,
+                diagnosticos, // Lista de Diagnosticos Maestra
+                consultasSemanas,
+                estiloSubtitulo,
+                estiloNormal,
+                estiloNegro
+        );
+
+        rowNum = escribirSeccionCarrerasMensual(
+                sheet,
+                rowNum,
+                consultasSemanas,
+                estiloSubtitulo,
+                estiloNormal,
+                estiloNegro
+        );
+
+        rowNum = escribirSeccionSexoMensual(sheet,rowNum,consultasSemanas,estiloSubtitulo,estiloNormal,estiloNegro);
+
+        // 1. Autoajustar columnas
+        for (int i = 0; i < 7; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // 2. FORZAR ANCHO MÍNIMO para evitar que las columnas de números se vean demasiado estrechas.
+        // Un valor de 3500 unidades (aproximadamente 13-14 caracteres de ancho) es un buen mínimo para legibilidad.
+        final int ANCHO_MINIMO_UNIDADES = 3500;
+
+        // Aplicar el mínimo a las columnas 0 (Categoría) y 1 (Conteo)
+        for (int i = 0; i < 7; i++) {
+            int anchoActual = sheet.getColumnWidth(i);
+
+            // Si el ancho autoajustado es menor que el mínimo deseado, forzar el mínimo
+            if (anchoActual < ANCHO_MINIMO_UNIDADES) {
+                sheet.setColumnWidth(i, ANCHO_MINIMO_UNIDADES);
+            }
+        }
+
+    }
+
+    private Map<String, List<Consulta>> agruparConsultasPorSemana(List<Consulta> consultas, LocalDate startOfMonth) {
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        int firstWeekNum = startOfMonth.get(weekFields.weekOfMonth());
+
+        // 1. Agrupación inicial: Solo crea entradas para las semanas CON datos.
+        Map<String, List<Consulta>> consultasAgrupadas = consultas.stream()
+                .collect(Collectors.groupingBy(consulta -> {
+                    LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int weekNum = fecha.get(weekFields.weekOfMonth());
+                    int semanaAjustada = weekNum - firstWeekNum + 1;
+                    return "Semana " + semanaAjustada;
+                }));
+
+        // 2. Determinar la CANTIDAD TOTAL de semanas que tiene el mes.
+        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+        int lastWeekNum = endOfMonth.get(weekFields.weekOfMonth());
+        int totalSemanasDelMes = lastWeekNum - firstWeekNum + 1;
+
+        // 3. Post-verificación e inyección de semanas vacías.
+        for (int i = 1; i <= totalSemanasDelMes; i++) {
+            String claveSemana = "Semana " + i;
+
+            // Si el mapa NO contiene la clave, significa que no hubo registros.
+            // La añadimos con una lista vacía (conteo = 0).
+            consultasAgrupadas.putIfAbsent(claveSemana, new ArrayList<>());
+        }
+
+        return consultasAgrupadas;
+    }
+
+    private int escribirSeccionDiagnosticoMensual(
+            Sheet sheet,
+            int rowNum,
+            List<Diagnostico> diagnosticosMaestros, // Lista completa de todos los diagnósticos (para filas con cero)
+            Map<String, List<Consulta>> consultasPorSemana, // Datos agrupados por "Semana 1", "Semana 2", etc.
+            CellStyle estiloSubtitulo,
+            CellStyle estiloNormal,
+            CellStyle estiloNegro
+    ) {
+
+        // --- 1. PREPARACIÓN DE LA ESTRUCTURA DE LA TABLA ---
+
+        // Lista ordenada de claves de semanas (ej: ["Semana 1", "Semana 2", ...])
+        List<String> semanas = new ArrayList<>(consultasPorSemana.keySet());
+        Collections.sort(semanas);
+        int totalColumns = 1 + semanas.size() + 1; // Columna Categoría + Semanas + Total
+
+        // --- 2. TÍTULO DE LA SECCIÓN ---
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("CAUSAS DE CONSULTAS");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<=consultasPorSemana.size()+1;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+
+        // --- 3. AGRUPACIÓN Y CONTEO POR SEMANA ---
+
+        // Mapa: Diagnóstico (String) -> Semana (String) -> Conteo (Long)
+        Map<String, Map<String, Long>> resumenPorDiagnostico = new HashMap<>();
+
+        for (Map.Entry<String, List<Consulta>> entradaSemana : consultasPorSemana.entrySet()) {
+            String nombreSemana = entradaSemana.getKey();
+
+            // Agrupar las consultas de ESA semana por el diagnóstico
+            Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getDiagnosticoKey().toString(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoSemana.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorDiagnostico.putIfAbsent(categoria, new HashMap<>());
+                resumenPorDiagnostico.get(categoria).put(nombreSemana, conteo);
+            }
+        }
+
+        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+
+        // La iteración debe hacerse sobre la lista maestra para asegurar el orden y las filas con conteo cero.
+        for (Diagnostico diagnostico : diagnosticosMaestros) {
+            String nombreDiagnostico = diagnostico.toString();
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Diagnóstico
+            Cell categoriaCell = dataRow.createCell(0);
+            categoriaCell.setCellValue(nombreDiagnostico);
+            categoriaCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 0; i < semanas.size(); i++) {
+                String nombreSemana = semanas.get(i);
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorDiagnostico
+                        .getOrDefault(nombreDiagnostico, Collections.emptyMap())
+                        .getOrDefault(nombreSemana, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i + 1);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Diagnóstico)
+            Cell totalCell = dataRow.createCell(totalColumns - 1);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+        return rowNum;
+    }
+
+    private int escribirSeccionCarrerasMensual(
+            Sheet sheet,
+            int rowNum,
+            Map<String, List<Consulta>> consultasPorSemana, // Datos agrupados por "Semana 1", "Semana 2", etc.
+            CellStyle estiloSubtitulo,
+            CellStyle estiloNormal,
+            CellStyle estiloNegro
+    ) {
+
+        // --- 1. PREPARACIÓN DE LA ESTRUCTURA DE LA TABLA ---
+
+        // Lista ordenada de claves de semanas (ej: ["Semana 1", "Semana 2", ...])
+        List<String> semanas = new ArrayList<>(consultasPorSemana.keySet());
+        Collections.sort(semanas);
+        int totalColumns = 1 + semanas.size() + 1; // Columna Categoría + Semanas + Total
+
+        // --- 2. TÍTULO DE LA SECCIÓN ---
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("Programas académicos");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<=consultasPorSemana.size()+1;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+        // --- 3. AGRUPACIÓN Y CONTEO POR SEMANA ---
+
+        // Mapa: Programa (String) -> Semana (String) -> Conteo (Long)
+        Map<String, Map<String, Long>> resumenPorPrograma = new HashMap<>();
+
+        for (Map.Entry<String, List<Consulta>> entradaSemana : consultasPorSemana.entrySet()) {
+            String nombreSemana = entradaSemana.getKey();
+
+            // Agrupar las consultas de ESA semana por el Programa Académico
+            Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getPaciente().getProgramaAcademico(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoSemana.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorPrograma.putIfAbsent(categoria, new HashMap<>());
+                resumenPorPrograma.get(categoria).put(nombreSemana, conteo);
+            }
+        }
+
+        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+
+        // Iteramos sobre la lista maestra para asegurar el orden y las filas con conteo cero.
+        for (String programa : programas) {
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Programa
+            Cell programaCell = dataRow.createCell(0);
+            programaCell.setCellValue(programa);
+            programaCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 0; i < semanas.size(); i++) {
+                String nombreSemana = semanas.get(i);
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorPrograma
+                        .getOrDefault(programa, Collections.emptyMap())
+                        .getOrDefault(nombreSemana, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i + 1);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Programa)
+            Cell totalCell = dataRow.createCell(totalColumns - 1);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+
+        return rowNum;
+    }
+
+    private int escribirSeccionSexoMensual(
+            Sheet sheet,
+            int rowNum,
+            Map<String, List<Consulta>> consultasPorSemana, // Datos agrupados por "Semana 1", "Semana 2", etc.
+            CellStyle estiloSubtitulo,
+            CellStyle estiloNormal,
+            CellStyle estiloNegro
+    ) {
+
+        // --- 1. PREPARACIÓN DE LA ESTRUCTURA DE LA TABLA ---
+
+        // Lista ordenada de claves de semanas (ej: ["Semana 1", "Semana 2", ...])
+        List<String> semanas = new ArrayList<>(consultasPorSemana.keySet());
+        Collections.sort(semanas);
+        int totalColumns = 1 + semanas.size() + 1; // Columna Categoría + Semanas + Total
+
+        // Lista maestra de categorías a iterar
+        List<String> sexosMaestros = List.of("Hombre", "Mujer");
+
+        // --- 2. TÍTULO DE LA SECCIÓN ---
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("Grupos (sexo)");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<=consultasPorSemana.size()+1;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+
+
+        // --- 3. AGRUPACIÓN Y CONTEO POR SEMANA ---
+
+        // Mapa: Sexo (String) -> Semana (String) -> Conteo (Long)
+        Map<String, Map<String, Long>> resumenPorSexo = new HashMap<>();
+
+        for (Map.Entry<String, List<Consulta>> entradaSemana : consultasPorSemana.entrySet()) {
+            String nombreSemana = entradaSemana.getKey();
+
+            // Agrupar las consultas de ESA semana por el Sexo
+            Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getPaciente().getSexo(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoSemana.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorSexo.putIfAbsent(categoria, new HashMap<>());
+                resumenPorSexo.get(categoria).put(nombreSemana, conteo);
+            }
+        }
+
+        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+
+        // Iteramos sobre la lista maestra ("Hombre", "Mujer").
+        for (String sexo : sexosMaestros) {
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Sexo
+            Cell sexoCell = dataRow.createCell(0);
+            sexoCell.setCellValue(sexo);
+            sexoCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 0; i < semanas.size(); i++) {
+                String nombreSemana = semanas.get(i);
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorSexo
+                        .getOrDefault(sexo, Collections.emptyMap())
+                        .getOrDefault(nombreSemana, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i + 1);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Sexo)
+            Cell totalCell = dataRow.createCell(totalColumns - 1);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+
+        return rowNum;
     }
 
     private CellStyle crearEstiloTitulo(Workbook workbook){
