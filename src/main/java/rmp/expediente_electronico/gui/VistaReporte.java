@@ -67,6 +67,12 @@ public class VistaReporte extends JFrame {
         reporteServicio.generarReporteMensual(mes, year);
     }
 
+    public void generarReporteAnual(){
+        int year = yearReporteAnualChooser.getYear();
+
+        reporteServicio.generarReporteAnual(year);
+    }
+
     public void mostrarMensaje(String texto) {
         JOptionPane.showMessageDialog(this, texto);
     }
@@ -219,7 +225,7 @@ public class VistaReporte extends JFrame {
     }//GEN-LAST:event_regresarButtonActionPerformed
 
     private void generarAnualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarAnualButtonActionPerformed
-        // TODO add your handling code here:
+        generarReporteAnual();
     }//GEN-LAST:event_generarAnualButtonActionPerformed
 
     private void generarMensualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarMensualButtonActionPerformed

@@ -4,6 +4,7 @@ import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SheetDataWriter;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
@@ -314,7 +316,7 @@ public class ReporteServicio {
         Row tituloRow = sheet.createRow(rowNum++);
         tituloRow.setHeight(ALTURA_SUBTITULO);
         Cell tituloCell = tituloRow.createCell(0);
-        tituloCell.setCellValue("Causa de consulta");
+        tituloCell.setCellValue("CAUSAS DE CONSULTA");
         tituloCell.setCellStyle(estiloSubtitulo);
         tituloRow.createCell(1).setCellStyle(estiloTitulo);
 
@@ -344,7 +346,7 @@ public class ReporteServicio {
         Row tituloRow = sheet.createRow(rowNum++);
         tituloRow.setHeight(ALTURA_SUBTITULO);
         Cell tituloCell = tituloRow.createCell(0);
-        tituloCell.setCellValue("Programas academicos");
+        tituloCell.setCellValue("PROGRAMAS ACADEMICOS");
         tituloCell.setCellStyle(estiloSubtitulo); // APLICADO
         tituloCell.setCellStyle(estiloSubtitulo);
         tituloRow.createCell(1).setCellStyle(estiloTitulo);
@@ -373,7 +375,7 @@ public class ReporteServicio {
         Row tituloRow = sheet.createRow(rowNum++);
         tituloRow.setHeight(ALTURA_SUBTITULO);
         Cell tituloCell = tituloRow.createCell(0);
-        tituloCell.setCellValue("Grupos(sexo)");
+        tituloCell.setCellValue("GRUPOS (SEXO)");
         tituloCell.setCellStyle(estiloSubtitulo); // APLICADO
         tituloCell.setCellStyle(estiloSubtitulo);
         tituloRow.createCell(1).setCellStyle(estiloTitulo);
@@ -405,7 +407,7 @@ public class ReporteServicio {
 
         // Convertir a java.util.Date para tu servicio de consulta (si usa el tipo antiguo)
         java.util.Date inicio = java.util.Date.from(startOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        java.util.Date fin = java.util.Date.from(endOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.util.Date fin = java.util.Date.from(endOfMonth.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
 
         // 3. Consulta de datos (la consulta debe usar el rango completo del mes)
         var consultas = consultaServicio.buscarPorFecha(inicio, fin);
@@ -459,7 +461,7 @@ public class ReporteServicio {
         }
     }
 
-    private void generarEstadisticasMensuales(Workbook workbook, List<Consulta> consultas, String titulo, LocalDate startOfMonth, List<Diagnostico> diagnosticos){
+    private void generarEstadisticasMensuales(Workbook workbook, List<Consulta> consultas, String titulo, LocalDate startOfMonth, List<Diagnostico> diagnosticos) {
         Sheet sheet = workbook.createSheet("Estadisticas");
 
         // 1. ESTILO PARA EL TÍTULO PRINCIPAL (Fondo Oscuro, Letra Blanca, 24px)
@@ -568,6 +570,7 @@ public class ReporteServicio {
         }
 
     }
+
 
     private Map<String, List<Consulta>> agruparConsultasPorSemana(List<Consulta> consultas, LocalDate startOfMonth) {
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
@@ -707,7 +710,7 @@ public class ReporteServicio {
         Row tituloRow = sheet.createRow(rowNum++);
         tituloRow.setHeight(ALTURA_SUBTITULO);
         Cell tituloCell = tituloRow.createCell(0);
-        tituloCell.setCellValue("Programas académicos");
+        tituloCell.setCellValue("PROGRAMAS ACADEMICOS");
         tituloCell.setCellStyle(estiloSubtitulo);
         for(int i=1;i<=consultasPorSemana.size()+1;i++){
             tituloRow.createCell(i).setCellStyle(estiloNegro);
@@ -796,7 +799,7 @@ public class ReporteServicio {
         Row tituloRow = sheet.createRow(rowNum++);
         tituloRow.setHeight(ALTURA_SUBTITULO);
         Cell tituloCell = tituloRow.createCell(0);
-        tituloCell.setCellValue("Grupos (sexo)");
+        tituloCell.setCellValue("GRUPOS (SEXO)");
         tituloCell.setCellStyle(estiloSubtitulo);
         for(int i=1;i<=consultasPorSemana.size()+1;i++){
             tituloRow.createCell(i).setCellStyle(estiloNegro);
@@ -857,6 +860,378 @@ public class ReporteServicio {
 
             // Última Columna: Total de la Fila (Sexo)
             Cell totalCell = dataRow.createCell(totalColumns - 1);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+
+        return rowNum;
+    }
+
+    public void generarReporteAnual(int year){
+        LocalDate startOfYear = LocalDate.of(year,1,1);
+        LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
+
+        //transformar a date
+        Date inicio = Date.from(startOfYear.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date fin = Date.from(endOfYear.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+
+        var consultas = consultaServicio.buscarPorFecha(inicio,fin);
+        var diagnosticos = diagnosticoServicio.listarDiagnosticos();
+        SimpleDateFormat sdp = new SimpleDateFormat("yyyy");
+        String nombreArchivo = "EXPELEC reporte_anual-".concat(sdp.format(inicio));
+
+        try {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar reporte de consultas");
+            fileChooser.setSelectedFile(new File(nombreArchivo));
+
+            // Filtro pa’ solo mostrar .xlsx
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos Excel (*.xlsx)", "xlsx"));
+
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            String rutaArchivo = "";
+            Workbook workbook = null;
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File archivoSeleccionado = fileChooser.getSelectedFile();
+
+                // Asegurar que termine con .xlsx
+                rutaArchivo = archivoSeleccionado.getAbsolutePath();
+                if (!rutaArchivo.toLowerCase().endsWith(".xlsx")) {
+                    rutaArchivo += ".xlsx";
+                }
+
+                // Creamos el workbook (archivo Excel)
+                workbook = new XSSFWorkbook();
+
+                // Generar los reportes
+                String titulo = sdp.format(inicio);
+                generarReporteConsultas(consultas,diagnosticos,workbook,titulo);
+                generarEstadisticasAnuales(workbook,consultas,diagnosticos,titulo);
+            }
+
+            // Guardar archivo
+            try (FileOutputStream fileOut = new FileOutputStream(rutaArchivo)) {
+                assert workbook != null;
+                workbook.write(fileOut);
+            }
+            workbook.close();
+            JOptionPane.showMessageDialog(null, "Reporte guardado en:\n" + rutaArchivo);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarMensaje("Error al generar el report: e" + e.getMessage());
+        }
+    }
+
+
+    private Map<Integer, List<Consulta>> agruparConsultasPorMes(List<Consulta> consultas){
+
+        Map<Integer, List<Consulta>> consultasMensuales = consultas.stream().collect(
+                Collectors.groupingBy(consulta -> {
+                    LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int mesNum = fecha.getMonth().getValue();
+                    return mesNum;
+                })
+        );
+
+
+        // inyeccion de meses vacios
+        for (int i = 1; i <= 12; i++) {
+            // Si el mapa NO contiene la clave, significa que no hubo registros.
+            // La añadimos con una lista vacía (conteo = 0).
+            consultasMensuales.putIfAbsent(i, new ArrayList<>());
+        }
+
+        return consultasMensuales;
+    }
+
+    private void generarEstadisticasAnuales(Workbook workbook, List<Consulta> consultas, List<Diagnostico> diagnosticos, String titulo){
+        Sheet sheet = workbook.createSheet("Estadisticas");
+
+        // 1. ESTILO PARA EL TÍTULO PRINCIPAL (Fondo Oscuro, Letra Blanca, 24px)
+        CellStyle estiloTituloPrincipal = crearEstiloTitulo(workbook);
+
+
+        // 2. ESTILO PARA SUBTÍTULOS / ENCABEZADOS DE SECCIÓN (Negro, 16px, Fondo Blanco)
+        CellStyle estiloSubtitulo = crearEstiloSubtitulo(workbook);
+
+
+        // 3. ESTILO NORMAL (Letra 14px y Bordes en todas las direcciones)
+        CellStyle estiloNormal = crearEstiloNormal(workbook);
+
+        // estilo negro
+        CellStyle estiloNegro = crearEstiloNegro(workbook);
+
+        int rowNum = 0;
+        Row tituloRow = sheet.createRow(rowNum++);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue(titulo);
+        tituloCell.setCellStyle(estiloTituloPrincipal);
+        tituloRow.createCell(1).setCellStyle(estiloTituloPrincipal);
+        tituloRow.setHeight(ALTURA_TITULO_PRINCIPAL);
+
+        // Semanas
+        Row mesesRow = sheet.createRow(rowNum++);
+        mesesRow.setHeight(ALTURA_SUBTITULO);
+        Cell subtituloCell = mesesRow.createCell(0);
+        subtituloCell.setCellValue("MES");
+        subtituloCell.setCellStyle(estiloSubtitulo);
+        Cell totalConsultas = mesesRow.createCell(1);
+        totalConsultas.setCellValue(consultas.size());
+        totalConsultas.setCellStyle(estiloNormal);
+
+        String[] meses = {"","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Nomviembre","Diciembre"};
+        var consultasMensuales = agruparConsultasPorMes(consultas);
+        for(int i=1;i<=consultasMensuales.size();i++){
+            Cell mes = mesesRow.createCell(i);
+            Cell tituloNegro = tituloRow.createCell(i);
+            mes.setCellValue(meses[i]);
+            mes.setCellStyle(estiloSubtitulo);
+            tituloNegro.setCellStyle(estiloNegro);
+        }
+        Cell totalTituloCell = mesesRow.createCell(consultasMensuales.size()+1);
+        totalTituloCell.setCellValue("Total");
+        totalTituloCell.setCellStyle(estiloSubtitulo);
+        tituloRow.createCell(consultasMensuales.size()+1).setCellStyle(estiloNegro);
+
+        // totales
+        Row totalesRow = sheet.createRow(rowNum++);
+        totalesRow.setHeight(ALTURA_SUBTITULO);
+        Cell totalesCell = totalesRow.createCell(0);
+        totalesCell.setCellValue("TOTAL");
+        totalesCell.setCellStyle(estiloSubtitulo);
+
+        for(int i=1;i<=consultasMensuales.size();i++){
+            Cell semana = totalesRow.createCell(i);
+            semana.setCellValue(consultasMensuales.get(i).size());
+            semana.setCellStyle(estiloNormal);
+        }
+        Cell totalConsultasCell = totalesRow.createCell(consultasMensuales.size()+1);
+        totalConsultasCell.setCellValue(consultas.size());
+        totalConsultasCell.setCellStyle(estiloNormal);
+
+        // relleno de datos
+        rowNum = escribirDiagnosticoAnual(sheet,rowNum,diagnosticos,consultasMensuales,estiloSubtitulo,estiloNormal,estiloNegro);
+
+        rowNum = escribirCarrerasAnual(sheet,rowNum,consultasMensuales,estiloSubtitulo,estiloNormal,estiloNegro);
+
+        rowNum = escribirSexoAnual(sheet,rowNum,consultasMensuales,estiloSubtitulo,estiloNormal,estiloNegro);
+
+
+        // 1. Autoajustar columnas
+        for (int i = 0; i < 14; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // 2. FORZAR ANCHO MÍNIMO para evitar que las columnas de números se vean demasiado estrechas.
+        // Un valor de 3500 unidades (aproximadamente 13-14 caracteres de ancho) es un buen mínimo para legibilidad.
+        final int ANCHO_MINIMO_UNIDADES = 3500;
+
+        // Aplicar el mínimo a las columnas 0 (Categoría) y 1 (Conteo)
+        for (int i = 0; i < 14; i++) {
+            int anchoActual = sheet.getColumnWidth(i);
+
+            // Si el ancho autoajustado es menor que el mínimo deseado, forzar el mínimo
+            if (anchoActual < ANCHO_MINIMO_UNIDADES) {
+                sheet.setColumnWidth(i, ANCHO_MINIMO_UNIDADES);
+            }
+        }
+    }
+
+    private int escribirDiagnosticoAnual(Sheet sheet, int rowNum, List<Diagnostico> diagnosticosMaestros, Map<Integer, List<Consulta>> consultasMenusuales, CellStyle estiloSubtitulo, CellStyle estiloNormal, CellStyle estiloNegro){
+        // --- 2. TÍTULO DE LA SECCIÓN ---
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("CAUSAS DE CONSULTAS");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<=consultasMenusuales.size()+1;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+        Map<String, Map<Integer, Long>> resumenPorDiagnostico = new HashMap<>();
+
+        for (Map.Entry<Integer, List<Consulta>> entradaMes : consultasMenusuales.entrySet()) {
+            Integer mes = entradaMes.getKey();
+
+            // Agrupar las consultas de ESA semana por el diagnóstico
+            Map<String, Long> conteoMes = entradaMes.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getDiagnosticoKey().toString(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoMes.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorDiagnostico.putIfAbsent(categoria, new HashMap<>());
+                resumenPorDiagnostico.get(categoria).put(mes, conteo);
+            }
+        }
+
+        for (Diagnostico diagnostico : diagnosticosMaestros) {
+            String nombreDiagnostico = diagnostico.toString();
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Diagnóstico
+            Cell categoriaCell = dataRow.createCell(0);
+            categoriaCell.setCellValue(nombreDiagnostico);
+            categoriaCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 1; i <= 12; i++) {
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorDiagnostico
+                        .getOrDefault(nombreDiagnostico, Collections.emptyMap())
+                        .getOrDefault(i, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Diagnóstico)
+            Cell totalCell = dataRow.createCell(13);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+        return rowNum;
+
+    }
+
+    private int escribirCarrerasAnual(Sheet sheet, int rowNum, Map<Integer, List<Consulta>> consultasMensuales,CellStyle estiloSubtitulo, CellStyle estiloNormal, CellStyle estiloNegro){
+
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("PROGRAMAS ACADEMICOS");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<= 13 ;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+        Map<String, Map<Integer, Long>> resumenPorPrograma = new HashMap<>();
+
+        for (Map.Entry<Integer, List<Consulta>> entradaMes : consultasMensuales.entrySet()) {
+            int mes = entradaMes.getKey();
+
+
+            Map<String, Long> conteoSemana = entradaMes.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getPaciente().getProgramaAcademico(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoSemana.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorPrograma.putIfAbsent(categoria, new HashMap<>());
+                resumenPorPrograma.get(categoria).put(mes, conteo);
+            }
+        }
+
+        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+
+        // Iteramos sobre la lista maestra para asegurar el orden y las filas con conteo cero.
+        for (String programa : programas) {
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Programa
+            Cell programaCell = dataRow.createCell(0);
+            programaCell.setCellValue(programa);
+            programaCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 1; i <= 12; i++) {
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorPrograma
+                        .getOrDefault(programa, Collections.emptyMap())
+                        .getOrDefault(i, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Programa)
+            Cell totalCell = dataRow.createCell(13);
+            totalCell.setCellValue(totalFila);
+            totalCell.setCellStyle(estiloNormal);
+        }
+
+        return rowNum;
+    }
+
+    private int escribirSexoAnual(Sheet sheet, int rowNum, Map<Integer,List<Consulta>> consultasMensuales,CellStyle estiloSubtitulo, CellStyle estiloNormal, CellStyle estiloNegro){
+        Row tituloRow = sheet.createRow(rowNum++);
+        tituloRow.setHeight(ALTURA_SUBTITULO);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellValue("GRUPOS (SEXO)");
+        tituloCell.setCellStyle(estiloSubtitulo);
+        for(int i=1;i<= 13 ;i++){
+            tituloRow.createCell(i).setCellStyle(estiloNegro);
+        }
+
+        List<String> sexosMaestros = List.of("Hombre", "Mujer");
+        Map<String, Map<Integer, Long>> resumenPorSexo = new HashMap<>();
+
+        for (Map.Entry<Integer, List<Consulta>> entradaMes : consultasMensuales.entrySet()) {
+            int mes = entradaMes.getKey();
+
+
+            Map<String, Long> conteoSemana = entradaMes.getValue().stream()
+                    .collect(Collectors.groupingBy(c -> c.getPaciente().getSexo(), Collectors.counting()));
+
+            // Integrar el conteo al mapa de resumen
+            for (Map.Entry<String, Long> entradaConteo : conteoSemana.entrySet()) {
+                String categoria = entradaConteo.getKey();
+                long conteo = entradaConteo.getValue();
+
+                resumenPorSexo.putIfAbsent(categoria, new HashMap<>());
+                resumenPorSexo.get(categoria).put(mes, conteo);
+            }
+        }
+
+        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+
+        // Iteramos sobre la lista maestra para asegurar el orden y las filas con conteo cero.
+        for (String sexo : sexosMaestros) {
+            Row dataRow = sheet.createRow(rowNum++);
+
+            // Columna 0: Nombre del Sexo
+            Cell sexoCell = dataRow.createCell(0);
+            sexoCell.setCellValue(sexo);
+            sexoCell.setCellStyle(estiloNormal);
+
+            long totalFila = 0;
+
+            // Columnas 1 hasta N: Conteo por Semana
+            for (int i = 1; i <= 12; i++) {
+
+                // Obtener el conteo: si no existe en el mapa de resumen, es 0
+                long conteo = resumenPorSexo
+                        .getOrDefault(sexo, Collections.emptyMap())
+                        .getOrDefault(i, 0L);
+
+                totalFila += conteo;
+
+                Cell conteoCell = dataRow.createCell(i);
+                conteoCell.setCellValue(conteo);
+                conteoCell.setCellStyle(estiloNormal);
+            }
+
+            // Última Columna: Total de la Fila (Sexo)
+            Cell totalCell = dataRow.createCell(13);
             totalCell.setCellValue(totalFila);
             totalCell.setCellStyle(estiloNormal);
         }
