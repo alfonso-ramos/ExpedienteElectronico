@@ -155,19 +155,19 @@ public class VistaReporte extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         generarButton = new javax.swing.JButton();
         finReporte = new com.toedter.calendar.JDateChooser();
-        regresarButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        regresarButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 220, 250, 40));
+        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, 250, 40));
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel3.setText("Fecha final");
-        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 310, -1, -1));
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 240, -1, -1));
 
         generarButton.setBackground(new java.awt.Color(26, 188, 156));
         generarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -178,8 +178,12 @@ public class VistaReporte extends javax.swing.JFrame {
                 generarButtonActionPerformed(evt);
             }
         });
-        bg.add(generarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 610, 180, 60));
-        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 340, 250, 30));
+        bg.add(generarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 540, 180, 60));
+        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 270, 250, 30));
+
+        jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel2.setText("Fecha de inicio");
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 120, -1, -1));
 
         regresarButton.setBackground(new java.awt.Color(255, 0, 51));
         regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -190,11 +194,7 @@ public class VistaReporte extends javax.swing.JFrame {
                 regresarButtonActionPerformed(evt);
             }
         });
-        bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 150, 50));
-
-        jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        jLabel2.setText("Fecha de inicio");
-        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 190, -1, -1));
+        bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 150, 50));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
@@ -206,7 +206,7 @@ public class VistaReporte extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 721, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

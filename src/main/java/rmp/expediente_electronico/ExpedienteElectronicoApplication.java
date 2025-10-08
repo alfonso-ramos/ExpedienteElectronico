@@ -7,8 +7,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import rmp.expediente_electronico.gui.ExpElec_Main;
-import rmp.expediente_electronico.gui.ExpElec_PacientesForma;
 import rmp.expediente_electronico.gui.VistaMain;
 
 import javax.swing.*;
