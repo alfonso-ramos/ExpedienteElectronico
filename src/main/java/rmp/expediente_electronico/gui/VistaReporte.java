@@ -5,38 +5,40 @@
 package rmp.expediente_electronico.gui;
 
 import lombok.Setter;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import rmp.expediente_electronico.modelo.Consulta;
-import rmp.expediente_electronico.servicio.ConsultaServicio;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.poi.ss.usermodel.Font;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import rmp.expediente_electronico.servicio.ReporteServicio;
+
+import java.awt.event.ActionEvent;
 
 @Component
-public class VistaReporte extends javax.swing.JFrame {
+public class VistaReporte extends JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VistaReporte.class.getName());
-
-    private ConsultaServicio consultaServicio;
+    private ReporteServicio reporteServicio;
     @Setter
     private VistaMain vistaMain;
 
+    // Altura Titulo Principal (ej: 40 puntos = 800 twips)
+    final short ALTURA_TITULO_PRINCIPAL = 800;
+
+    // Altura Subtítulos (ej: 30 puntos = 600 twips)
+    final short ALTURA_SUBTITULO = 600;
+
     @Autowired
-    public VistaReporte(ConsultaServicio consultaServicio) {
-        this.consultaServicio = consultaServicio;
+    public VistaReporte(ReporteServicio reporteServicio){
+        this.reporteServicio = reporteServicio;
+
         initComponents();
     }
 
-    public void generarReporte() {
+    public void setProgramas(String[] programas){
+        this.programas = programas;
+        reporteServicio.setProgramas(programas);
+    }
+
+    public void generarReporteFecha(){
         var inicio = inicioReporte.getDate();
         var fin = finReporte.getDate();
 
@@ -49,102 +51,27 @@ public class VistaReporte extends javax.swing.JFrame {
             return;
         }
 
-        var consultas = consultaServicio.buscarPorFecha(inicio, fin);
-        SimpleDateFormat sdp = new SimpleDateFormat("d-MMMM-yyyy");
-        String nombre = "reporte ".concat(sdp.format(inicio).concat(" ".concat(sdp.format(fin))));
-
-        try {
-            generarReporteConsultas(consultas, nombre);
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarMensaje("Error al generar el reporte: " + e.getMessage());
-        }
+        reporteServicio.generarReporteFecha(inicio,fin);
     }
 
+    public void generarReporteMensual(){
 
-    public void generarReporteConsultas(List<Consulta> consultas, String nombreArchivo) throws IOException {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Guardar reporte de consultas");
-        fileChooser.setSelectedFile(new File(nombreArchivo));
+        int mes = mesReporteMensualChooser.getMonth() + 1;
+        int year = yearReporteMensualChooser.getYear();
 
-        // Filtro pa’ solo mostrar .xlsx
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos Excel (*.xlsx)", "xlsx"));
+        reporteServicio.generarReporteMensual(mes, year);
+    }
 
-        int userSelection = fileChooser.showSaveDialog(null);
+    public void generarReporteAnual(){
+        int year = yearReporteAnualChooser.getYear();
 
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File archivoSeleccionado = fileChooser.getSelectedFile();
-
-            // Asegurar que termine con .xlsx
-            String rutaArchivo = archivoSeleccionado.getAbsolutePath();
-            if (!rutaArchivo.toLowerCase().endsWith(".xlsx")) {
-                rutaArchivo += ".xlsx";
-            }
-
-            // Creamos el workbook (archivo Excel)
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("Reporte");
-
-
-
-            // Estilo para cabecera azul con letra blanca
-            CellStyle estiloHeader = workbook.createCellStyle();
-            Font font = (Font) workbook.createFont();
-            font.setBold(true);
-            font.setColor(IndexedColors.WHITE.index); // letra blanca
-            estiloHeader.setFont(font);
-
-            // Fondo azul
-            estiloHeader.setFillForegroundColor(IndexedColors.ROYAL_BLUE.index);
-            estiloHeader.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            // Encabezados
-            String[] columnas = {"Matricula", "Nombres", "Apellidos", "Edad", "Programa academico",
-                    "Diagnóstico", "Medicamento", "Observaciones", "Fecha", "Altura", "Peso", "IMC", "Estado IMC"};
-            Row headerRow = sheet.createRow(0);
-            for (int i = 0; i < columnas.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(columnas[i]);
-                cell.setCellStyle(estiloHeader);
-            }
-
-            // Llenado de datos
-            int rowNum = 1;
-            for (Consulta consulta : consultas) {
-                Row row = sheet.createRow(rowNum++);
-                var paciente = consulta.getPaciente();
-                row.createCell(0).setCellValue(paciente.getMatricula());
-                row.createCell(1).setCellValue(paciente.getNombres());
-                row.createCell(2).setCellValue(paciente.getApellidos());
-                row.createCell(3).setCellValue(consulta.getEdad() != null ? consulta.getEdad() : 0);
-                row.createCell(4).setCellValue(paciente.getProgramaAcademico());
-                row.createCell(5).setCellValue(consulta.getDiagnostico());
-                row.createCell(6).setCellValue(consulta.getMedicamento());
-                row.createCell(7).setCellValue(consulta.getObservaciones());
-                row.createCell(8).setCellValue(consulta.getFechaReg() != null ? consulta.getFechaReg().toString() : "");
-                row.createCell(9).setCellValue(consulta.getAltura() != null ? consulta.getAltura() : 0f);
-                row.createCell(10).setCellValue(consulta.getPeso() != null ? consulta.getPeso() : 0f);
-                row.createCell(11).setCellValue(consulta.getImc() != null ? consulta.getImc() : 0f);
-                row.createCell(12).setCellValue(consulta.getImc_estado());
-            }
-
-            // Autoajustar columnas
-            for (int i = 0; i < columnas.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
-
-            // Guardar archivo
-            try (FileOutputStream fileOut = new FileOutputStream(rutaArchivo)) {
-                workbook.write(fileOut);
-            }
-            workbook.close();
-            JOptionPane.showMessageDialog(null, "Reporte guardado en:\n" + rutaArchivo);
-        }
+        reporteServicio.generarReporteAnual(year);
     }
 
     public void mostrarMensaje(String texto) {
         JOptionPane.showMessageDialog(this, texto);
     }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -153,37 +80,94 @@ public class VistaReporte extends javax.swing.JFrame {
         bg = new javax.swing.JPanel();
         inicioReporte = new com.toedter.calendar.JDateChooser();
         jLabel3 = new javax.swing.JLabel();
-        generarButton = new javax.swing.JButton();
         finReporte = new com.toedter.calendar.JDateChooser();
         jLabel2 = new javax.swing.JLabel();
-        regresarButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        mesReporteMensualChooser = new com.toedter.calendar.JMonthChooser();
+        generarAnualButton = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        yearReporteAnualChooser = new com.toedter.calendar.JYearChooser();
+        jLabel7 = new javax.swing.JLabel();
+        generarMensualButton = new javax.swing.JButton();
+        generarPorFechaButton = new javax.swing.JButton();
+        yearReporteMensualChooser = new com.toedter.calendar.JYearChooser();
         jPanel1 = new javax.swing.JPanel();
+        regresarButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, 250, 40));
+        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 250, 40));
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel3.setText("Fecha final");
-        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 240, -1, -1));
-
-        generarButton.setBackground(new java.awt.Color(26, 188, 156));
-        generarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        generarButton.setForeground(new java.awt.Color(255, 255, 255));
-        generarButton.setText("Generar reporte");
-        generarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generarButtonActionPerformed(evt);
-            }
-        });
-        bg.add(generarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 540, 180, 60));
-        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 270, 250, 30));
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 250, -1, -1));
+        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 250, 40));
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        jLabel2.setText("Fecha de inicio");
-        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 120, -1, -1));
+        jLabel2.setText("Año");
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 610, -1, -1));
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel1.setText("Generar reporte por año");
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, -1, 50));
+
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel4.setText("Generar reporte por fecha");
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, 50));
+
+        jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel5.setText("Fecha de inicio");
+        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
+        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 170, 180, 40));
+
+        generarAnualButton.setBackground(new java.awt.Color(26, 188, 156));
+        generarAnualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        generarAnualButton.setForeground(new java.awt.Color(255, 255, 255));
+        generarAnualButton.setText("Generar reporte");
+        generarAnualButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generarAnualButtonActionPerformed(evt);
+            }
+        });
+        bg.add(generarAnualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 600, 180, 60));
+
+        jLabel6.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel6.setText("Generar reporte por mes");
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 60, -1, 50));
+        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 600, 140, 50));
+
+        jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel7.setText("Mes");
+        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 130, -1, -1));
+
+        generarMensualButton.setBackground(new java.awt.Color(26, 188, 156));
+        generarMensualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        generarMensualButton.setForeground(new java.awt.Color(255, 255, 255));
+        generarMensualButton.setText("Generar reporte");
+        generarMensualButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generarMensualButtonActionPerformed(evt);
+            }
+        });
+        bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 270, 180, 60));
+
+        generarPorFechaButton.setBackground(new java.awt.Color(26, 188, 156));
+        generarPorFechaButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        generarPorFechaButton.setForeground(new java.awt.Color(255, 255, 255));
+        generarPorFechaButton.setText("Generar reporte");
+        generarPorFechaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generarPorFechaButtonActionPerformed(evt);
+            }
+        });
+        bg.add(generarPorFechaButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
+        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 160, 120, 50));
+
+        jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
         regresarButton.setBackground(new java.awt.Color(255, 0, 51));
         regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -194,19 +178,22 @@ public class VistaReporte extends javax.swing.JFrame {
                 regresarButtonActionPerformed(evt);
             }
         });
-        bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 150, 50));
-
-        jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 224, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(38, Short.MAX_VALUE)
+                .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 721, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -227,24 +214,41 @@ public class VistaReporte extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void generarButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        generarReporte();
-    }
-
-
-    private void regresarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
+    private void regresarButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
         setVisible(false);
         vistaMain.setVisible(true);
     }//GEN-LAST:event_regresarButtonActionPerformed
 
+    private void generarAnualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarAnualButtonActionPerformed
+        generarReporteAnual();
+    }//GEN-LAST:event_generarAnualButtonActionPerformed
+
+    private void generarMensualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarMensualButtonActionPerformed
+        generarReporteMensual();
+    }//GEN-LAST:event_generarMensualButtonActionPerformed
+
+    private void generarPorFechaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorFechaButtonActionPerformed
+        generarReporteFecha();
+    }//GEN-LAST:event_generarPorFechaButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bg;
     private com.toedter.calendar.JDateChooser finReporte;
-    private javax.swing.JButton generarButton;
+    private javax.swing.JButton generarAnualButton;
+    private javax.swing.JButton generarMensualButton;
+    private javax.swing.JButton generarPorFechaButton;
     private com.toedter.calendar.JDateChooser inicioReporte;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private com.toedter.calendar.JMonthChooser mesReporteMensualChooser;
     private javax.swing.JButton regresarButton;
+    private com.toedter.calendar.JYearChooser yearReporteAnualChooser;
+    private com.toedter.calendar.JYearChooser yearReporteMensualChooser;
     // End of variables declaration//GEN-END:variables
 }

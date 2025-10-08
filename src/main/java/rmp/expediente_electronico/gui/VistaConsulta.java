@@ -8,12 +8,13 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rmp.expediente_electronico.modelo.Consulta;
+import rmp.expediente_electronico.modelo.Diagnostico;
 import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.ConsultaServicio;
+import rmp.expediente_electronico.servicio.DiagnosticoServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -29,16 +30,29 @@ public class VistaConsulta extends javax.swing.JFrame {
     private ConsultaServicio consultaServicio;
     private Consulta consulta;
     private PacienteServicio pacienteServicio;
+    private DiagnosticoServicio diagnosticoServicio;
 
     @Autowired
-    public VistaConsulta(ConsultaServicio consultaServicio, PacienteServicio pacienteServicio) {
+    public VistaConsulta(ConsultaServicio consultaServicio, PacienteServicio pacienteServicio, DiagnosticoServicio diagnosticoServicio) {
         this.consultaServicio = consultaServicio;
         this.pacienteServicio = pacienteServicio;
+        this.diagnosticoServicio = diagnosticoServicio;
         this.consulta = new Consulta();
 
         initComponents();
         listarPacientes();
+        listarDiagnosticos();
     }
+
+    public void listarDiagnosticos(){
+        List<Diagnostico> diagnosticos = diagnosticoServicio.listarDiagnosticos();
+
+        diagnosticoComboBox.removeAllItems();
+        diagnosticos.forEach(diagnostico -> {
+            diagnosticoComboBox.addItem(diagnostico);
+        });
+    }
+
 
     public void listarPacientes(){
         List<Paciente> pacientes = pacienteServicio.listarPacientes();
@@ -59,6 +73,10 @@ public class VistaConsulta extends javax.swing.JFrame {
             mostrarMensaje("Seleccione un paciente");
         }
 
+        if(diagnosticoComboBox.getSelectedItem() == null){
+            mostrarMensaje("Seleccione una causa de diagnostico");
+        }
+
         if(tallaComboBox.getSelectedItem() == null){
             mostrarMensaje("Seleccione una talla");
         }
@@ -73,8 +91,6 @@ public class VistaConsulta extends javax.swing.JFrame {
 
         Paciente paciente = (Paciente) pacientesComboBox.getSelectedItem();
         Integer edad = calcularEdad(paciente.getFechaNacimiento());
-        Float peso = (Float) pesoSpinner.getValue();
-        Float altura = (Float) alturaSpinner.getValue();
         Float imc = ((Float) pesoSpinner.getValue()) / (((Float) alturaSpinner.getValue()) * ((Float) alturaSpinner.getValue()));
         String imcEstado = sacarImcEstado(imc);
 
@@ -82,6 +98,7 @@ public class VistaConsulta extends javax.swing.JFrame {
         consulta.setAltura((Float) alturaSpinner.getValue());
         consulta.setPaciente(paciente);
         consulta.setImc(imc);
+        consulta.setDiagnosticoKey((Diagnostico) diagnosticoComboBox.getSelectedItem());
         consulta.setDiagnostico(diagnosticoField.getText());
         consulta.setFechaReg(java.sql.Date.valueOf(LocalDate.now()));
         consulta.setMedicamento(medicamentoField.getText());
@@ -165,6 +182,7 @@ public class VistaConsulta extends javax.swing.JFrame {
         tallaComboBox.setSelectedItem(consulta.getTalla());
         alturaSpinner.setValue(consulta.getAltura());
         pesoSpinner.setValue(consulta.getPeso());
+        diagnosticoComboBox.setSelectedItem(consulta.getDiagnosticoKey());
     }
 
     public void regresar(){
@@ -195,6 +213,8 @@ public class VistaConsulta extends javax.swing.JFrame {
         pesoSpinner = new javax.swing.JSpinner();
         guardarButton = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
+        diagnosticoComboBox = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         buscarField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -262,6 +282,11 @@ public class VistaConsulta extends javax.swing.JFrame {
 
         jLabel8.setText("Peso");
         bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 190, -1, -1));
+
+        bg.add(diagnosticoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, 150, 30));
+
+        jLabel1.setText("Causa de diagnostico");
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 260, -1, -1));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
@@ -360,8 +385,10 @@ public class VistaConsulta extends javax.swing.JFrame {
     private javax.swing.JSpinner alturaSpinner;
     private javax.swing.JPanel bg;
     private javax.swing.JTextField buscarField;
+    private javax.swing.JComboBox<Diagnostico> diagnosticoComboBox;
     private javax.swing.JTextArea diagnosticoField;
     private javax.swing.JButton guardarButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
