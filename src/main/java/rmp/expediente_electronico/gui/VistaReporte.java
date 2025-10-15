@@ -19,6 +19,7 @@ public class VistaReporte extends JFrame {
     private ReporteServicio reporteServicio;
     @Setter
     private VistaMain vistaMain;
+    private String[] programas;
 
     // Altura Titulo Principal (ej: 40 puntos = 800 twips)
     final short ALTURA_TITULO_PRINCIPAL = 800;

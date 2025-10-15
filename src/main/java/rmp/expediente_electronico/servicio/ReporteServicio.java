@@ -272,20 +272,23 @@ public class ReporteServicio {
         totalConsultas.setCellStyle(estiloNormal);
 
 
-        // 1. Conteo por Diagnóstico
+        // 1. Conteo por Diagnóstico (filtrando nulos)
         Map<Diagnostico, Long> conteoPorDiagnostico = consultas.stream()
+                .filter(c -> c.getDiagnosticoKey() != null)
                 .collect(Collectors.groupingBy(Consulta::getDiagnosticoKey, Collectors.counting()));
 
         rowNum = escribirSeccionDiagnostico(sheet, rowNum, conteoPorDiagnostico, diagnosticos, estiloSubtitulo, estiloNormal, estiloTituloPrincipal);
 
-        // 2. Conteo por Programa Académico
+        // 2. Conteo por Programa Académico (filtrando nulos)
         Map<String, Long> conteoPorPrograma = consultas.stream()
+                .filter(c -> c.getPaciente() != null && c.getPaciente().getProgramaAcademico() != null)
                 .collect(Collectors.groupingBy(c -> c.getPaciente().getProgramaAcademico(), Collectors.counting()));
 
         rowNum = escribirSeccionCarreras(sheet, rowNum, conteoPorPrograma, estiloSubtitulo, estiloNormal, estiloTituloPrincipal);
 
-//        // 3. Conteo por Sexo
+//        // 3. Conteo por Sexo (filtrando nulos)
         Map<String, Long> conteoPorSexo = consultas.stream()
+                .filter(c -> c.getPaciente() != null && c.getPaciente().getSexo() != null)
                 .collect(Collectors.groupingBy(c -> c.getPaciente().getSexo(), Collectors.counting()));
 
         rowNum = escribirSeccionSexo(sheet, rowNum, conteoPorSexo, estiloSubtitulo, estiloNormal, estiloTituloPrincipal);
@@ -578,6 +581,7 @@ public class ReporteServicio {
 
         // 1. Agrupación inicial: Solo crea entradas para las semanas CON datos.
         Map<String, List<Consulta>> consultasAgrupadas = consultas.stream()
+                .filter(c -> c.getFechaReg() != null)
                 .collect(Collectors.groupingBy(consulta -> {
                     LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int weekNum = fecha.get(weekFields.weekOfMonth());
@@ -640,6 +644,7 @@ public class ReporteServicio {
 
             // Agrupar las consultas de ESA semana por el diagnóstico
             Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .filter(c -> c.getDiagnosticoKey() != null)
                     .collect(Collectors.groupingBy(c -> c.getDiagnosticoKey().toString(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
@@ -726,6 +731,7 @@ public class ReporteServicio {
 
             // Agrupar las consultas de ESA semana por el Programa Académico
             Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .filter(c -> c.getPaciente() != null && c.getPaciente().getProgramaAcademico() != null)
                     .collect(Collectors.groupingBy(c -> c.getPaciente().getProgramaAcademico(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
@@ -817,6 +823,7 @@ public class ReporteServicio {
 
             // Agrupar las consultas de ESA semana por el Sexo
             Map<String, Long> conteoSemana = entradaSemana.getValue().stream()
+                    .filter(c -> c.getPaciente() != null && c.getPaciente().getSexo() != null)
                     .collect(Collectors.groupingBy(c -> c.getPaciente().getSexo(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
@@ -928,13 +935,13 @@ public class ReporteServicio {
 
     private Map<Integer, List<Consulta>> agruparConsultasPorMes(List<Consulta> consultas){
 
-        Map<Integer, List<Consulta>> consultasMensuales = consultas.stream().collect(
-                Collectors.groupingBy(consulta -> {
+        Map<Integer, List<Consulta>> consultasMensuales = consultas.stream()
+                .filter(c -> c.getFechaReg() != null)
+                .collect(Collectors.groupingBy(consulta -> {
                     LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int mesNum = fecha.getMonth().getValue();
                     return mesNum;
-                })
-        );
+                }));
 
 
         // inyeccion de meses vacios
@@ -1058,6 +1065,7 @@ public class ReporteServicio {
 
             // Agrupar las consultas de ESA semana por el diagnóstico
             Map<String, Long> conteoMes = entradaMes.getValue().stream()
+                    .filter(c -> c.getDiagnosticoKey() != null)
                     .collect(Collectors.groupingBy(c -> c.getDiagnosticoKey().toString(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
@@ -1123,6 +1131,7 @@ public class ReporteServicio {
 
 
             Map<String, Long> conteoSemana = entradaMes.getValue().stream()
+                    .filter(c -> c.getPaciente() != null && c.getPaciente().getProgramaAcademico() != null)
                     .collect(Collectors.groupingBy(c -> c.getPaciente().getProgramaAcademico(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
@@ -1190,6 +1199,7 @@ public class ReporteServicio {
 
 
             Map<String, Long> conteoSemana = entradaMes.getValue().stream()
+                    .filter(c -> c.getPaciente() != null && c.getPaciente().getSexo() != null)
                     .collect(Collectors.groupingBy(c -> c.getPaciente().getSexo(), Collectors.counting()));
 
             // Integrar el conteo al mapa de resumen
