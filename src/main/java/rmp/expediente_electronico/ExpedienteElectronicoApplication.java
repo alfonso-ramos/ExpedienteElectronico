@@ -2,7 +2,6 @@ package rmp.expediente_electronico;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
