@@ -100,21 +100,26 @@ public class VistaReporte extends JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        inicioReporte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 250, 40));
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel3.setText("Fecha final");
         bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 250, -1, -1));
+
+        finReporte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 250, 40));
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel2.setText("Año");
-        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 610, -1, -1));
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setText("Generar reporte por año");
-        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, -1, 50));
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 60, -1, 50));
 
         jLabel4.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel4.setText("Generar reporte por fecha");
@@ -123,7 +128,9 @@ public class VistaReporte extends JFrame {
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel5.setText("Fecha de inicio");
         bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
-        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 170, 180, 40));
+
+        mesReporteMensualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 160, 140, 50));
 
         generarAnualButton.setBackground(new java.awt.Color(26, 188, 156));
         generarAnualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -134,16 +141,18 @@ public class VistaReporte extends JFrame {
                 generarAnualButtonActionPerformed(evt);
             }
         });
-        bg.add(generarAnualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 600, 180, 60));
+        bg.add(generarAnualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 270, 180, 60));
 
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel6.setText("Generar reporte por mes");
-        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 60, -1, 50));
-        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 600, 140, 50));
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 60, -1, 50));
+
+        yearReporteAnualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 160, 140, 50));
 
         jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel7.setText("Mes");
-        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 130, -1, -1));
+        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 130, -1, -1));
 
         generarMensualButton.setBackground(new java.awt.Color(26, 188, 156));
         generarMensualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -154,7 +163,7 @@ public class VistaReporte extends JFrame {
                 generarMensualButtonActionPerformed(evt);
             }
         });
-        bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 270, 180, 60));
+        bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 270, 180, 60));
 
         generarPorFechaButton.setBackground(new java.awt.Color(26, 188, 156));
         generarPorFechaButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -166,12 +175,14 @@ public class VistaReporte extends JFrame {
             }
         });
         bg.add(generarPorFechaButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
-        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 160, 120, 50));
+
+        yearReporteMensualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 160, 120, 50));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
         regresarButton.setBackground(new java.awt.Color(255, 0, 51));
-        regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         regresarButton.setForeground(new java.awt.Color(255, 255, 255));
         regresarButton.setText("Regresar");
         regresarButton.addActionListener(new java.awt.event.ActionListener() {
@@ -194,7 +205,7 @@ public class VistaReporte extends JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(37, 37, 37)
                 .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(768, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -202,13 +213,15 @@ public class VistaReporte extends JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1029, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 721, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 

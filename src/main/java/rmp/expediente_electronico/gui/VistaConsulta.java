@@ -188,7 +188,7 @@ public class VistaConsulta extends javax.swing.JFrame {
     public void regresar(){
         this.setVisible(false);
         limpiarFormulario();
-        vistaMain.listarConsultas();
+        vistaMain.listarPacientes();
         vistaMain.setVisible(true);
     }
 
@@ -230,47 +230,52 @@ public class VistaConsulta extends javax.swing.JFrame {
         diagnosticoField.setRows(5);
         jScrollPane1.setViewportView(diagnosticoField);
 
-        bg.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 90, -1, -1));
+        bg.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(534, 90, 250, 90));
 
+        jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel3.setText("Diagnostico");
-        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 70, -1, -1));
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 70, 150, 20));
 
+        jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel4.setText("Medicamento");
-        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 310, -1, -1));
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 310, 150, 20));
 
         medicamentoField.setColumns(20);
         medicamentoField.setRows(5);
         jScrollPane2.setViewportView(medicamentoField);
 
-        bg.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 330, -1, -1));
+        bg.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(534, 330, 250, 90));
 
         observacionesField.setColumns(20);
         observacionesField.setRows(5);
         jScrollPane3.setViewportView(observacionesField);
 
-        bg.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 210, -1, -1));
+        bg.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(534, 210, 250, 90));
 
+        jLabel5.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel5.setText("Observaciones");
-        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 190, -1, -1));
+        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(535, 190, 180, 20));
 
         tallaComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "S", "M", "L", "XL", "XXL" }));
-        bg.add(tallaComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 90, 110, 30));
+        bg.add(tallaComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 110, 120, 30));
 
         alturaSpinner.setModel(new javax.swing.SpinnerNumberModel(1.7f, null, null, 0.01f));
         alturaSpinner.setToolTipText("");
-        bg.add(alturaSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 150, 100, 30));
+        bg.add(alturaSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 110, 30));
 
+        jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel6.setText("Talla");
-        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, -1, -1));
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 150, 20));
 
+        jLabel7.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel7.setText("Altura");
-        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 130, -1, -1));
+        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 180, 90, 20));
 
         pesoSpinner.setModel(new javax.swing.SpinnerNumberModel(50.0f, null, null, 1.0f));
-        bg.add(pesoSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 210, 100, 30));
+        bg.add(pesoSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 290, 110, 30));
 
         guardarButton.setBackground(new java.awt.Color(26, 188, 156));
-        guardarButton.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+        guardarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         guardarButton.setForeground(new java.awt.Color(255, 255, 255));
         guardarButton.setText("Guardar");
         guardarButton.addActionListener(new java.awt.event.ActionListener() {
@@ -278,15 +283,17 @@ public class VistaConsulta extends javax.swing.JFrame {
                 guardarButtonActionPerformed(evt);
             }
         });
-        bg.add(guardarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(796, 462, 120, 50));
+        bg.add(guardarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(786, 462, 130, 50));
 
+        jLabel8.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel8.setText("Peso");
-        bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 190, -1, -1));
+        bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 260, 100, 20));
 
-        bg.add(diagnosticoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 280, 150, 30));
+        bg.add(diagnosticoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 410, 160, 30));
 
+        jLabel1.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel1.setText("Causa de diagnostico");
-        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 260, -1, -1));
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, 270, 30));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
@@ -307,7 +314,7 @@ public class VistaConsulta extends javax.swing.JFrame {
         jLabel2.setText("Paciente");
 
         regresarButton.setBackground(new java.awt.Color(255, 51, 51));
-        regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 13)); // NOI18N
+        regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         regresarButton.setText("Regresar");
         regresarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -319,18 +326,14 @@ public class VistaConsulta extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(pacientesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buscarField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addComponent(pacientesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buscarField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,7 +342,7 @@ public class VistaConsulta extends javax.swing.JFrame {
                 .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58)
                 .addComponent(buscarField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(30, 30, 30)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pacientesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -359,7 +362,7 @@ public class VistaConsulta extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(bg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 847, Short.MAX_VALUE)
         );
 
         pack();

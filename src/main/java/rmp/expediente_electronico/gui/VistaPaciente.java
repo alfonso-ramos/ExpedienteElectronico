@@ -123,6 +123,9 @@ public class VistaPaciente extends javax.swing.JFrame {
         } else{
             mostrarMensaje("Datos del paciente actualizados");
         }
+        if(vistaMain != null){
+            vistaMain.listarPacientes();
+        }
         limpiarFormulario();
         listarPacientes();
     }
@@ -151,6 +154,26 @@ public class VistaPaciente extends javax.swing.JFrame {
             fechaNacimiento.setDate(paciente.getFechaNacimiento());
             sexoComboBox.setSelectedItem(paciente.getSexo());
         }
+    }
+
+    public void cargarPacientePorId(Integer idPaciente){
+        if(idPaciente == null){
+            return;
+        }
+
+        paciente = pacienteServicio.buscarPacientePorId(idPaciente);
+
+        if(paciente == null){
+            mostrarMensaje("No se encontró el paciente seleccionado");
+            return;
+        }
+
+        matriculaTexto.setText(paciente.getMatricula());
+        nombresTexto.setText(paciente.getNombres());
+        apellidosTexto.setText(paciente.getApellidos());
+        carrerasComboBox.setSelectedItem(paciente.getProgramaAcademico());
+        fechaNacimiento.setDate(paciente.getFechaNacimiento());
+        sexoComboBox.setSelectedItem(paciente.getSexo());
     }
 //
 //    public void cerrarEdicion(){
@@ -326,7 +349,10 @@ public class VistaPaciente extends javax.swing.JFrame {
 
     private void regresarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
         this.setVisible(false);
-        vistaMain.setVisible(true);
+        if(vistaMain != null){
+            vistaMain.listarPacientes();
+            vistaMain.setVisible(true);
+        }
     }//GEN-LAST:event_regresarButtonActionPerformed
 
     private void guardarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarButtonActionPerformed
