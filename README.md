@@ -41,6 +41,11 @@ Sistema integral de gestión para consultorio médico desarrollado específicame
 - ✅ Manejo robusto de errores
 - ✅ Experiencia de usuario optimizada
 
+### 🤝 Contacto y soporte integrado
+- ✅ Ventana dedicada (**VistaContacto**) con datos de los desarrolladores del proyecto
+- ✅ Acceso directo desde la vista principal para dudas o solicitudes de soporte
+- ✅ Cierre independiente (no termina la aplicación)
+
 ## 🛠 Tecnologías Utilizadas
 
 ### 🚀 Framework Principal
@@ -59,6 +64,18 @@ Sistema integral de gestión para consultorio médico desarrollado específicame
 - **Dotenv Java 3.0.0** - Gestión de variables de entorno
 - **AbsoluteLayout** - Layout manager avanzado para GUI
 
+## 🧱 Arquitectura del Sistema
+
+El sistema sigue una arquitectura en capas apoyada por Spring Boot:
+
+1. **Presentación (Swing + FlatLaf)**: Ventanas en `gui/` (VistaMain, VistaPaciente, VistaConsulta, VistaReporte y VistaContacto) inyectadas como beans para poder compartir estado y navegación.
+2. **Servicios**: Clases en `servicio/` encapsulan la lógica de negocio y coordinan llamadas al repositorio.
+3. **Repositorios (Spring Data JPA)**: Interfaces en `repositorio/` que exponen consultas hacia MySQL sin necesidad de SQL explícito.
+4. **Persistencia**: Entidades en `modelo/` definen el mapeo ORM.
+5. **Infraestructura**: `ExpedienteElectronicoApplication` levanta el contexto Spring en modo `headless=false` para crear las ventanas via `SwingUtilities`, y `dotenv-java` carga credenciales de la base de datos desde `.env`.
+
+Esta estructura permite pruebas unitarias en los servicios, reutilización de ventanas mediante inyección y separación clara entre UI y datos.
+
 ## 🏗 Estructura del Proyecto
 
 ```
@@ -67,7 +84,8 @@ src/main/java/rmp/expediente_electronico/
 │   ├── VistaMain.java         # Ventana principal del sistema
 │   ├── VistaPaciente.java     # Gestión de pacientes
 │   ├── VistaConsulta.java     # Registro de consultas médicas
-│   └── VistaReporte.java      # Generación de reportes
+│   ├── VistaReporte.java      # Generación de reportes
+│   └── VistaContacto.java     # Información de soporte y contacto
 ├── 🏛 modelo/                 # Entidades y modelos de datos
 │   ├── Paciente.java          # Entidad paciente
 │   ├── Consulta.java          # Entidad consulta médica
@@ -178,7 +196,7 @@ La aplicación cuenta con múltiples vistas especializadas:
 | **👥 Pacientes** | Gestión completa del registro de pacientes |
 | **🩺 Consultas** | Registro y seguimiento de consultas médicas |
 | **📊 Reportes** | Generación de informes estadísticos y análisis |
-| **⚙️ Configuración** | Parámetros del sistema y preferencias |
+| **📞 Contacto** | Información directa de los desarrolladores para soporte |
 
 ## 👥 Equipo de Desarrollo
 

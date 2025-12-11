@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>rmp</groupId>
 	<artifactId>expediente_electronico</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>expediente_electronico</name>
 	<description>Expediente electronico para consultorio medico de UPSIN</description>
 	<url/>

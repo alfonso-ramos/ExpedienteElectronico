@@ -243,31 +243,36 @@ public class VistaPaciente extends javax.swing.JFrame {
         });
         bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 43, 120, 40));
 
+        jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel2.setText("Matrícula");
-        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, -1, -1));
-        bg.add(matriculaTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 136, -1));
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 150, -1, -1));
+        bg.add(matriculaTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, 250, 30));
 
+        jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel6.setText("Fecha de nacimiento");
-        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 160, -1, -1));
-        bg.add(fechaNacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 190, 136, -1));
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, -1, -1));
+        bg.add(fechaNacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 250, 280, 30));
 
+        jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel3.setText("Nombres");
-        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 240, -1, -1));
-        bg.add(nombresTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 270, 491, 33));
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 300, -1, -1));
+        bg.add(nombresTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 330, 491, 33));
 
+        jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel4.setText("Apellidos");
-        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 330, -1, -1));
-        bg.add(apellidosTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, 491, 35));
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 390, -1, -1));
+        bg.add(apellidosTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 491, 35));
 
+        jLabel5.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel5.setText("Programa académico");
-        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, -1, -1));
+        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 490, -1, -1));
 
         carrerasComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 carrerasComboBoxActionPerformed(evt);
             }
         });
-        bg.add(carrerasComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 368, 34));
+        bg.add(carrerasComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 520, 490, 34));
 
         guardarButton.setBackground(new java.awt.Color(26, 188, 156));
         guardarButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -318,30 +323,40 @@ public class VistaPaciente extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tabla);
 
-        bg.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 124, 570, 550));
+        bg.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 124, 810, 550));
 
         buscarPacienteField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 buscarPacienteFieldKeyTyped(evt);
             }
         });
-        bg.add(buscarPacienteField, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 72, 270, 30));
+        bg.add(buscarPacienteField, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 62, 340, 40));
 
         sexoComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hombre", "Mujer" }));
-        bg.add(sexoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 187, 120, 30));
+        sexoComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sexoComboBoxActionPerformed(evt);
+            }
+        });
+        bg.add(sexoComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 250, 180, 30));
 
+        jLabel1.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel1.setText("Sexo");
-        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 160, -1, -1));
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1258, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -382,6 +397,10 @@ public class VistaPaciente extends javax.swing.JFrame {
     private void carrerasComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_carrerasComboBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_carrerasComboBoxActionPerformed
+
+    private void sexoComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sexoComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sexoComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField apellidosTexto;
