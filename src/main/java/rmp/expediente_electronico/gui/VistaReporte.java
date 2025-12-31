@@ -9,14 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import rmp.expediente_electronico.modelo.Paciente;
+import rmp.expediente_electronico.servicio.PacienteServicio;
 import rmp.expediente_electronico.servicio.ReporteServicio;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 @Component
 public class VistaReporte extends JFrame {
 
     private ReporteServicio reporteServicio;
+    private PacienteServicio pacienteServicio;
     @Setter
     private VistaMain vistaMain;
     private String[] programas;
@@ -28,10 +35,14 @@ public class VistaReporte extends JFrame {
     final short ALTURA_SUBTITULO = 600;
 
     @Autowired
-    public VistaReporte(ReporteServicio reporteServicio){
+    public VistaReporte(ReporteServicio reporteServicio, PacienteServicio pacienteServicio){
         this.reporteServicio = reporteServicio;
+        this.pacienteServicio = pacienteServicio;
 
         initComponents();
+        buscarPacientesInput.setText("");
+        configurarBusquedaPacientes();
+        listarPacientes();
     }
 
     public void setProgramas(String[] programas){
@@ -69,8 +80,61 @@ public class VistaReporte extends JFrame {
         reporteServicio.generarReporteAnual(year);
     }
 
+/home/poncho/Documents/Workspace/ExpedienteElectronico/src/main/java/rmp/expediente_electronico/gui/VistaReporte.java:90:24
+java: cannot find symbol
+  symbol:   method generarReportePaciente(rmp.expediente_electronico.modelo.Paciente)
+  location: variable reporteServicio of type rmp.expediente_electronico.servicio.ReporteServicio
+        var seleccionado = (Paciente) pacientesComboBox.getSelectedItem();
+        if (seleccionado == null) {
+            mostrarMensaje("Seleccione un paciente para generar el reporte");
+            return;
+        }
+
+        reporteServicio.generarReportePaciente(seleccionado);
+    }
+
     public void mostrarMensaje(String texto) {
         JOptionPane.showMessageDialog(this, texto);
+    }
+
+    private void configurarBusquedaPacientes() {
+        buscarPacientesInput.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                buscarPacientesPorTexto();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                buscarPacientesPorTexto();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                buscarPacientesPorTexto();
+            }
+        });
+    }
+
+    private void listarPacientes() {
+        var pacientes = pacienteServicio.listarPacientes();
+        llenarPacientesBox(pacientes);
+    }
+
+    private void buscarPacientesPorTexto() {
+        String criterio = buscarPacientesInput.getText().trim();
+        if (criterio.isEmpty()) {
+            listarPacientes();
+            return;
+        }
+
+        var pacientes = pacienteServicio.buscarPacientes(criterio);
+        llenarPacientesBox(pacientes);
+    }
+
+    private void llenarPacientesBox(List<Paciente> pacientes) {
+        pacientesComboBox.removeAllItems();
+        pacientes.forEach(pacientesComboBox::addItem);
     }
 
 
@@ -92,8 +156,12 @@ public class VistaReporte extends JFrame {
         yearReporteAnualChooser = new com.toedter.calendar.JYearChooser();
         jLabel7 = new javax.swing.JLabel();
         generarMensualButton = new javax.swing.JButton();
-        generarPorFechaButton = new javax.swing.JButton();
+        generarPorPacienteButton = new javax.swing.JButton();
         yearReporteMensualChooser = new com.toedter.calendar.JYearChooser();
+        generarPorFechaButton1 = new javax.swing.JButton();
+        pacientesComboBox = new javax.swing.JComboBox<>();
+        buscarPacientesInput = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         regresarButton = new javax.swing.JButton();
 
@@ -122,8 +190,8 @@ public class VistaReporte extends JFrame {
         bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 60, -1, 50));
 
         jLabel4.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel4.setText("Generar reporte por fecha");
-        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, 50));
+        jLabel4.setText("Generar reporte por paciente");
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 550, -1, 50));
 
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel5.setText("Fecha de inicio");
@@ -165,19 +233,40 @@ public class VistaReporte extends JFrame {
         });
         bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 270, 180, 60));
 
-        generarPorFechaButton.setBackground(new java.awt.Color(26, 188, 156));
-        generarPorFechaButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        generarPorFechaButton.setForeground(new java.awt.Color(255, 255, 255));
-        generarPorFechaButton.setText("Generar reporte");
-        generarPorFechaButton.addActionListener(new java.awt.event.ActionListener() {
+        generarPorPacienteButton.setBackground(new java.awt.Color(26, 188, 156));
+        generarPorPacienteButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        generarPorPacienteButton.setForeground(new java.awt.Color(255, 255, 255));
+        generarPorPacienteButton.setText("Generar reporte");
+        generarPorPacienteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generarPorFechaButtonActionPerformed(evt);
+                generarPorPacienteButtonActionPerformed(evt);
             }
         });
-        bg.add(generarPorFechaButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
+        bg.add(generarPorPacienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 700, 180, 60));
 
         yearReporteMensualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 160, 120, 50));
+
+        generarPorFechaButton1.setBackground(new java.awt.Color(26, 188, 156));
+        generarPorFechaButton1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        generarPorFechaButton1.setForeground(new java.awt.Color(255, 255, 255));
+        generarPorFechaButton1.setText("Generar reporte");
+        generarPorFechaButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generarPorFechaButton1ActionPerformed(evt);
+            }
+        });
+        bg.add(generarPorFechaButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
+
+        pacientesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        bg.add(pacientesComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 710, 510, 50));
+
+        buscarPacientesInput.setText("Buscar Paciente");
+        bg.add(buscarPacientesInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 630, 510, 50));
+
+        jLabel8.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel8.setText("Generar reporte por fecha");
+        bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, 50));
 
         jPanel1.setBackground(new java.awt.Color(56, 89, 152));
 
@@ -241,16 +330,22 @@ public class VistaReporte extends JFrame {
         generarReporteMensual();
     }//GEN-LAST:event_generarMensualButtonActionPerformed
 
-    private void generarPorFechaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorFechaButtonActionPerformed
-        generarReporteFecha();
-    }//GEN-LAST:event_generarPorFechaButtonActionPerformed
+    private void generarPorPacienteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorPacienteButtonActionPerformed
+        generarReportePacienteSeleccionado();
+    }//GEN-LAST:event_generarPorPacienteButtonActionPerformed
+
+    private void generarPorFechaButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorFechaButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generarPorFechaButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bg;
+    private javax.swing.JTextField buscarPacientesInput;
     private com.toedter.calendar.JDateChooser finReporte;
     private javax.swing.JButton generarAnualButton;
     private javax.swing.JButton generarMensualButton;
-    private javax.swing.JButton generarPorFechaButton;
+    private javax.swing.JButton generarPorFechaButton1;
+    private javax.swing.JButton generarPorPacienteButton;
     private com.toedter.calendar.JDateChooser inicioReporte;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -259,8 +354,10 @@ public class VistaReporte extends JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private com.toedter.calendar.JMonthChooser mesReporteMensualChooser;
+    private javax.swing.JComboBox<String> pacientesComboBox;
     private javax.swing.JButton regresarButton;
     private com.toedter.calendar.JYearChooser yearReporteAnualChooser;
     private com.toedter.calendar.JYearChooser yearReporteMensualChooser;

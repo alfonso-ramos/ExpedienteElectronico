@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rmp.expediente_electronico.modelo.Consulta;
 import rmp.expediente_electronico.modelo.Diagnostico;
+import rmp.expediente_electronico.modelo.Paciente;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -95,6 +96,67 @@ public class ReporteServicio {
         }
     }
 
+    public void generarReportePaciente(Paciente paciente) {
+
+        if (paciente == null) {
+            mostrarMensaje("Seleccione un paciente válido para generar el reporte");
+            return;
+        }
+
+        var consultas = consultaServicio.buscarPorPaciente(paciente);
+
+        if (consultas.isEmpty()) {
+            mostrarMensaje("El paciente seleccionado no tiene consultas registradas");
+            return;
+        }
+
+        var diagnosticos = diagnosticoServicio.listarDiagnosticos();
+        SimpleDateFormat sdp = new SimpleDateFormat("yyyyMMdd_HHmm");
+        String nombreArchivo = "EXPELEC reporte_paciente_".concat(paciente.getMatricula()).concat("_" + sdp.format(new Date()));
+
+        try {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar reporte histórico del paciente");
+            fileChooser.setSelectedFile(new File(nombreArchivo));
+
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos Excel (*.xlsx)", "xlsx"));
+
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            String rutaArchivo = null;
+            Workbook workbook = null;
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File archivoSeleccionado = fileChooser.getSelectedFile();
+
+                rutaArchivo = archivoSeleccionado.getAbsolutePath();
+                if (!rutaArchivo.toLowerCase().endsWith(".xlsx")) {
+                    rutaArchivo += ".xlsx";
+                }
+
+                workbook = new XSSFWorkbook();
+
+                generarResumenPaciente(workbook, paciente, consultas.size());
+                String titulo = paciente.toString();
+                generarReporteConsultas(consultas, diagnosticos, workbook, titulo);
+            }
+
+            if (workbook == null || rutaArchivo == null) {
+                return;
+            }
+
+            try (FileOutputStream fileOut = new FileOutputStream(rutaArchivo)) {
+                workbook.write(fileOut);
+            }
+            workbook.close();
+            JOptionPane.showMessageDialog(null, "Reporte guardado en:\n" + rutaArchivo);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarMensaje("Error al generar el reporte: " + e.getMessage());
+        }
+    }
+
 
     public void generarReporteConsultas(List<Consulta> consultas, List<Diagnostico> diagnosticos, Workbook workbook, String titulo) throws IOException {
 
@@ -133,7 +195,7 @@ public class ReporteServicio {
 
         // Encabezados
         String[] columnas = {"Matricula", "Nombres", "Apellidos", "Edad", "Programa academico",
-                "Diagnóstico", "Medicamento", "Observaciones", "Fecha", "Altura", "Peso", "IMC", "Estado IMC"};
+                "Diagnóstico", "Causa diagnóstico", "Medicamento", "Observaciones", "Fecha", "Altura", "Peso", "IMC", "Estado IMC"};
         Row headerRow = sheet.createRow(1);
         headerRow.setHeight(ALTURA_SUBTITULO);
         for (int i = 0; i < columnas.length; i++) {
@@ -178,51 +240,57 @@ public class ReporteServicio {
             c4.setCellValue(paciente.getProgramaAcademico());
             c4.setCellStyle(estiloNormal);
 
-            // Columna 5: Diagnóstico
+            // Columna 5: Diagnóstico (texto libre)
             Cell c5 = row.createCell(5);
             c5.setCellValue(consulta.getDiagnostico());
             c5.setCellStyle(estiloNormal);
 
-            // Columna 6: Medicamento
+            // Columna 6: Causa del diagnóstico (catálogo)
             Cell c6 = row.createCell(6);
-            c6.setCellValue(consulta.getMedicamento());
+            String causaDiagnostico = consulta.getDiagnosticoKey() != null ? consulta.getDiagnosticoKey().toString() : "";
+            c6.setCellValue(causaDiagnostico);
             c6.setCellStyle(estiloNormal);
 
-            // Columna 7: Observaciones
+            // Columna 7: Medicamento
             Cell c7 = row.createCell(7);
-            c7.setCellValue(consulta.getObservaciones());
+            c7.setCellValue(consulta.getMedicamento());
             c7.setCellStyle(estiloNormal);
 
-            // Columna 8: Fecha (Texto/String de la Fecha)
+            // Columna 8: Observaciones
             Cell c8 = row.createCell(8);
-            c8.setCellValue(consulta.getFechaReg() != null ? consulta.getFechaReg().toString() : "");
+            c8.setCellValue(consulta.getObservaciones());
             c8.setCellStyle(estiloNormal);
+
+            // Columna 9: Fecha (Texto/String de la Fecha)
+            Cell c9 = row.createCell(9);
+            c9.setCellValue(consulta.getFechaReg() != null ? consulta.getFechaReg().toString() : "");
+            c9.setCellStyle(estiloNormal);
 
 
             // ----------------------------------------------------
             // APLICACIÓN DE ESTILO NÚMERO (Float)
             // ----------------------------------------------------
 
-            // Columna 9: Altura
-            Cell c9 = row.createCell(9);
-            // Usamos setCellValue(double) para que aplique el formato de número
-            c9.setCellValue(consulta.getAltura() != null ? consulta.getAltura() : 0f);
-            c9.setCellStyle(estiloNumero);
-
-            // Columna 10: Peso
+            // Columna 10: Altura
             Cell c10 = row.createCell(10);
-            c10.setCellValue(consulta.getPeso() != null ? consulta.getPeso() : 0f);
+            // Usamos setCellValue(double) para que aplique el formato de número
+            c10.setCellValue(consulta.getAltura() != null ? consulta.getAltura() : 0f);
             c10.setCellStyle(estiloNumero);
 
-            // Columna 11: IMC
+            // Columna 11: Peso
             Cell c11 = row.createCell(11);
-            c11.setCellValue(consulta.getImc() != null ? consulta.getImc() : 0f);
+            c11.setCellValue(consulta.getPeso() != null ? consulta.getPeso() : 0f);
             c11.setCellStyle(estiloNumero);
 
-            // Columna 12: Estado IMC (texto)
+            // Columna 12: IMC
             Cell c12 = row.createCell(12);
-            c12.setCellValue(consulta.getImc_estado());
-            c12.setCellStyle(estiloNormal);
+            c12.setCellValue(consulta.getImc() != null ? consulta.getImc() : 0f);
+            c12.setCellStyle(estiloNumero);
+
+            // Columna 13: Estado IMC (texto)
+            Cell c13 = row.createCell(13);
+            c13.setCellValue(consulta.getImc_estado());
+            c13.setCellStyle(estiloNormal);
         }
 
         // Autoajustar columnas
@@ -1319,5 +1387,49 @@ public class ReporteServicio {
         estiloNumero.setDataFormat(format.getFormat("0.00"));
 
         return estiloNumero;
+    }
+
+    private void generarResumenPaciente(Workbook workbook, Paciente paciente, int totalConsultas) {
+        Sheet sheet = workbook.createSheet("Resumen");
+
+        CellStyle estiloTitulo = crearEstiloTitulo(workbook);
+        CellStyle estiloSubtitulo = crearEstiloSubtitulo(workbook);
+        CellStyle estiloNormal = crearEstiloNormal(workbook);
+
+        Row tituloRow = sheet.createRow(0);
+        tituloRow.setHeight(ALTURA_TITULO_PRINCIPAL);
+        Cell tituloCell = tituloRow.createCell(0);
+        tituloCell.setCellStyle(estiloTitulo);
+        tituloCell.setCellValue("Histórico del paciente");
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+
+        int rowIdx = 2;
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Nombre completo", paciente.toString(), estiloSubtitulo, estiloNormal);
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Matrícula", paciente.getMatricula(), estiloSubtitulo, estiloNormal);
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Programa", paciente.getProgramaAcademico(), estiloSubtitulo, estiloNormal);
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Sexo", paciente.getSexo(), estiloSubtitulo, estiloNormal);
+
+        String fechaNacimiento = paciente.getFechaNacimiento() != null ? new SimpleDateFormat("dd/MM/yyyy").format(paciente.getFechaNacimiento()) : "No registrado";
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Fecha de nacimiento", fechaNacimiento, estiloSubtitulo, estiloNormal);
+
+        escribirDatoResumen(sheet, rowIdx, "Total de consultas registradas", String.valueOf(totalConsultas), estiloSubtitulo, estiloNormal);
+
+        for (int i = 0; i < 4; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    private int escribirDatoResumen(Sheet sheet, int rowIdx, String etiqueta, String valor, CellStyle estiloSubtitulo, CellStyle estiloNormal) {
+        Row row = sheet.createRow(rowIdx++);
+        row.setHeight(ALTURA_SUBTITULO);
+        Cell etiquetaCell = row.createCell(0);
+        etiquetaCell.setCellStyle(estiloSubtitulo);
+        etiquetaCell.setCellValue(etiqueta);
+
+        Cell valorCell = row.createCell(1);
+        valorCell.setCellStyle(estiloNormal);
+        valorCell.setCellValue(valor != null ? valor : "No registrado");
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return rowIdx;
     }
 }

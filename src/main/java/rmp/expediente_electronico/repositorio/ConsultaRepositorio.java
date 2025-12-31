@@ -11,5 +11,7 @@ public interface ConsultaRepositorio extends JpaRepository <Consulta, Integer> {
 
     List<Consulta> findByPacienteIn(List<Paciente> pacientes);
 
+    List<Consulta> findByPacienteOrderByFechaRegAsc(Paciente paciente);
+
     List<Consulta> findByFechaRegBetween(Date inicio, Date fin);
 }

@@ -36,6 +36,10 @@ public class ConsultaServicio {
         return consultaRepositorio.findByPacienteIn(pacientes);
     }
 
+    public List<Consulta> buscarPorPaciente(Paciente paciente){
+        return consultaRepositorio.findByPacienteOrderByFechaRegAsc(paciente);
+    }
+
     public List<Consulta> buscarPorFecha(Date inicio, Date fin){
         return consultaRepositorio.findByFechaRegBetween(inicio,fin);
     }
