@@ -92,7 +92,7 @@ public class ReporteServicio {
 
         } catch (IOException e) {
             e.printStackTrace();
-            mostrarMensaje("Error al generar el report: e" + e.getMessage());
+            mostrarMensaje("Error al generar el reporte: " + e.getMessage());
         }
     }
 
@@ -528,7 +528,7 @@ public class ReporteServicio {
 
         } catch (IOException e) {
             e.printStackTrace();
-            mostrarMensaje("Error al generar el report: e" + e.getMessage());
+            mostrarMensaje("Error al generar el reporte: " + e.getMessage());
         }
     }
 
@@ -996,7 +996,7 @@ public class ReporteServicio {
 
         } catch (IOException e) {
             e.printStackTrace();
-            mostrarMensaje("Error al generar el report: e" + e.getMessage());
+            mostrarMensaje("Error al generar el reporte: " + e.getMessage());
         }
     }
 

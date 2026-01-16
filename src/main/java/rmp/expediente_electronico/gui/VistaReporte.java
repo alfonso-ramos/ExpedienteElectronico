@@ -76,20 +76,15 @@ public class VistaReporte extends JFrame {
 
     public void generarReporteAnual(){
         int year = yearReporteAnualChooser.getYear();
-
         reporteServicio.generarReporteAnual(year);
     }
-
-/home/poncho/Documents/Workspace/ExpedienteElectronico/src/main/java/rmp/expediente_electronico/gui/VistaReporte.java:90:24
-java: cannot find symbol
-  symbol:   method generarReportePaciente(rmp.expediente_electronico.modelo.Paciente)
-  location: variable reporteServicio of type rmp.expediente_electronico.servicio.ReporteServicio
-        var seleccionado = (Paciente) pacientesComboBox.getSelectedItem();
+    
+    public void generarReportePacienteSeleccionado() {
+        Paciente seleccionado = (Paciente) pacientesComboBox.getSelectedItem();
         if (seleccionado == null) {
             mostrarMensaje("Seleccione un paciente para generar el reporte");
             return;
         }
-
         reporteServicio.generarReportePaciente(seleccionado);
     }
 
@@ -133,8 +128,32 @@ java: cannot find symbol
     }
 
     private void llenarPacientesBox(List<Paciente> pacientes) {
-        pacientesComboBox.removeAllItems();
-        pacientes.forEach(pacientesComboBox::addItem);
+        DefaultComboBoxModel<Paciente> model = new DefaultComboBoxModel<>();
+        for (Paciente paciente : pacientes) {
+            model.addElement(paciente);
+        }
+        
+        // Set the model to the combo box
+        pacientesComboBox.setModel(model);
+        
+        // Set a custom renderer to display the patient information
+        pacientesComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            public java.awt.Component getListCellRendererComponent(JList list, Object value, int index, 
+                                                        boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Paciente) {
+                    Paciente paciente = (Paciente) value;
+                    setText(paciente.getMatricula() + " - " + 
+                           paciente.getNombres() + " " + 
+                           paciente.getApellidos());
+                } else if (value == null) {
+                    setText("Seleccione un paciente");
+                }
+                return this;
+            }
+        });
     }
 
 
@@ -258,7 +277,7 @@ java: cannot find symbol
         });
         bg.add(generarPorFechaButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
 
-        pacientesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        pacientesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>());
         bg.add(pacientesComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 710, 510, 50));
 
         buscarPacientesInput.setText("Buscar Paciente");
@@ -357,7 +376,7 @@ java: cannot find symbol
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private com.toedter.calendar.JMonthChooser mesReporteMensualChooser;
-    private javax.swing.JComboBox<String> pacientesComboBox;
+    private javax.swing.JComboBox<Paciente> pacientesComboBox;
     private javax.swing.JButton regresarButton;
     private com.toedter.calendar.JYearChooser yearReporteAnualChooser;
     private com.toedter.calendar.JYearChooser yearReporteMensualChooser;
