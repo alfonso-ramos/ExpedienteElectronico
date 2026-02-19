@@ -354,7 +354,7 @@ public class VistaReporte extends JFrame {
     }//GEN-LAST:event_generarPorPacienteButtonActionPerformed
 
     private void generarPorFechaButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarPorFechaButton1ActionPerformed
-        // TODO add your handling code here:
+        generarReporteFecha();
     }//GEN-LAST:event_generarPorFechaButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
