@@ -124,7 +124,7 @@ public class VistaPaciente extends javax.swing.JFrame {
             mostrarMensaje("Datos del paciente actualizados");
         }
         if(vistaMain != null){
-            vistaMain.listarPacientes();
+            vistaMain.listarConsultas();
         }
         limpiarFormulario();
         listarPacientes();
@@ -365,7 +365,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private void regresarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
         this.setVisible(false);
         if(vistaMain != null){
-            vistaMain.listarPacientes();
+            vistaMain.listarConsultas();
             vistaMain.setVisible(true);
         }
     }//GEN-LAST:event_regresarButtonActionPerformed

@@ -100,7 +100,7 @@ public class VistaConsulta extends javax.swing.JFrame {
         consulta.setImc(imc);
         consulta.setDiagnosticoKey((Diagnostico) diagnosticoComboBox.getSelectedItem());
         consulta.setDiagnostico(diagnosticoField.getText());
-        consulta.setFechaReg(java.sql.Date.valueOf(LocalDate.now()));
+        consulta.setFechaReg(new java.util.Date());
         consulta.setMedicamento(medicamentoField.getText());
         consulta.setImc_estado(imcEstado);
         consulta.setObservaciones(observacionesField.getText());
@@ -188,7 +188,7 @@ public class VistaConsulta extends javax.swing.JFrame {
     public void regresar(){
         this.setVisible(false);
         limpiarFormulario();
-        vistaMain.listarPacientes();
+        vistaMain.listarConsultas();
         vistaMain.setVisible(true);
     }
 
