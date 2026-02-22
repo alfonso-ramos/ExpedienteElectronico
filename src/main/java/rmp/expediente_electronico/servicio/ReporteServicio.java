@@ -664,10 +664,12 @@ public class ReporteServicio {
                 ClientAnchor anchor = helper.createClientAnchor();
                 // Columna H es índice 7 (A=0, B=1, ... H=7)
                 anchor.setCol1(7);
-                anchor.setRow1(lastDataRow + 2);
-                // Ancho aproximado: hasta la columna N (índice 13)
-                anchor.setCol2(13);
-                anchor.setRow2(lastDataRow + 20);
+                // Colocamos la grafica principal a partir de la fila 2 (indice 1)
+                anchor.setRow1(1);
+                // Ancho aproximado: hasta la columna R (índice 17)
+                anchor.setCol2(17);
+                // Alto: unas 18 filas de alto aprox (hasta la fila 20, indice 19)
+                anchor.setRow2(19);
 
                 XSSFChart chart = drawing.createChart(anchor);
                 chart.setTitleText("Consultas por motivo");
@@ -699,6 +701,57 @@ public class ReporteServicio {
                 series.setTitle("Consultas por motivo", null);
 
                 chart.plot(data);
+
+                // =========================================================
+                // GRÁFICAS ADICIONALES: POR SEMANA (HASTA 4 SEMANAS)
+                // =========================================================
+
+                int maxSemanasGraficas = Math.min(4, semanasCount);
+                int chartHeight = 16; // alto aproximado en filas
+
+                for (int i = 0; i < maxSemanasGraficas; i++) {
+                    int weekCol = 1 + i; // columna de la semana i (1 = Semana 1, 2 = Semana 2, ...)
+
+                    ClientAnchor anchorSemana = helper.createClientAnchor();
+                    anchorSemana.setCol1(7);
+                    // ubicamos cada grafica semanal debajo de la grafica mensual, una debajo de otra
+                    int baseRow = 21 + i * (chartHeight + 2); // empieza debajo de la principal
+                    anchorSemana.setRow1(baseRow);
+                    // hasta columna R (índice 17)
+                    anchorSemana.setCol2(17);
+                    anchorSemana.setRow2(baseRow + chartHeight);
+
+                    XSSFChart chartSemana = drawing.createChart(anchorSemana);
+                    chartSemana.setTitleText("Consultas Semana " + (i + 1));
+                    chartSemana.setTitleOverlay(false);
+
+                    XDDFChartLegend legendSemana = chartSemana.getOrAddLegend();
+                    legendSemana.setPosition(LegendPosition.BOTTOM);
+
+                    XDDFCategoryAxis bottomAxisSemana = chartSemana.createCategoryAxis(AxisPosition.BOTTOM);
+                    bottomAxisSemana.setTitle("Motivo de consulta");
+                    XDDFValueAxis leftAxisSemana = chartSemana.createValueAxis(AxisPosition.LEFT);
+                    leftAxisSemana.setTitle("Total de consultas");
+                    leftAxisSemana.setCrosses(AxisCrosses.AUTO_ZERO);
+
+                    XDDFDataSource<String> categoriasSemana = XDDFDataSourcesFactory.fromStringCellRange(
+                            xssfSheet,
+                            new CellRangeAddress(firstDataRow, lastDataRow, categoriaCol, categoriaCol)
+                    );
+
+                    XDDFNumericalDataSource<Double> valoresSemana = XDDFDataSourcesFactory.fromNumericCellRange(
+                            xssfSheet,
+                            new CellRangeAddress(firstDataRow, lastDataRow, weekCol, weekCol)
+                    );
+
+                    XDDFBarChartData dataSemana = (XDDFBarChartData) chartSemana.createData(ChartTypes.BAR, bottomAxisSemana, leftAxisSemana);
+                    dataSemana.setBarDirection(BarDirection.COL);
+
+                    XDDFBarChartData.Series seriesSemana = (XDDFBarChartData.Series) dataSemana.addSeries(categoriasSemana, valoresSemana);
+                    seriesSemana.setTitle("Consultas Semana " + (i + 1), null);
+
+                    chartSemana.plot(dataSemana);
+                }
             }
         }
 
@@ -776,6 +829,16 @@ public class ReporteServicio {
         Cell totalLabelCell = totalRow.createCell(0);
         totalLabelCell.setCellValue("TOTAL");
         totalLabelCell.setCellStyle(estiloSubtitulo);
+
+        // Totales por semana en la fila TOTAL
+        for (int i = 0; i < semanas.size(); i++) {
+            String nombreSemana = semanas.get(i);
+            long totalSemana = consultasPorSemana.getOrDefault(nombreSemana, Collections.emptyList()).size();
+
+            Cell celdaSemana = totalRow.createCell(i + 1);
+            celdaSemana.setCellValue(totalSemana);
+            celdaSemana.setCellStyle(estiloNormal);
+        }
 
         Cell totalGlobalCell = totalRow.createCell(totalColumns - 1);
         totalGlobalCell.setCellValue(totalGlobal);
