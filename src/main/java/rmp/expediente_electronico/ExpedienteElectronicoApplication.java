@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import rmp.expediente_electronico.gui.VistaMain;
 
 import javax.swing.*;
+import java.awt.*;
 
 @SpringBootApplication
 public class ExpedienteElectronicoApplication {
@@ -21,6 +22,10 @@ public class ExpedienteElectronicoApplication {
 		System.setProperty("DATABASE_PASSWORD", dotenv.get("DATABASE_PASSWORD"));
 
 		FlatLightLaf.setup();
+
+		final JWindow splash = crearSplash();
+		splash.setVisible(true);
+
 		// Instanciar fabrica de Spring
 		ConfigurableApplicationContext contextoSpring =
 				new SpringApplicationBuilder(ExpedienteElectronicoApplication.class)
@@ -32,8 +37,27 @@ public class ExpedienteElectronicoApplication {
 			VistaMain vistaMain = contextoSpring.getBean(VistaMain.class);
 			vistaMain.setLocationRelativeTo(null);
 			vistaMain.setVisible(true);
+			splash.setVisible(false);
+			splash.dispose();
 		});
 		
+	}
+
+	private static JWindow crearSplash(){
+		JWindow splash = new JWindow();
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+		panel.setBackground(Color.WHITE);
+
+		JLabel titulo = new JLabel("Expediente electronico - UPSIN", SwingConstants.CENTER);
+		Font fuente = titulo.getFont().deriveFont(Font.BOLD, 20f);
+		titulo.setFont(fuente);
+		panel.add(titulo, BorderLayout.CENTER);
+
+		splash.getContentPane().add(panel);
+		splash.setSize(400, 200);
+		splash.setLocationRelativeTo(null);
+		return splash;
 	}
 
 }
