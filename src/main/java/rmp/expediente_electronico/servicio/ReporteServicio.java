@@ -4,8 +4,11 @@ import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SheetDataWriter;
+import org.apache.poi.xssf.usermodel.XSSFChart;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xddf.usermodel.chart.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rmp.expediente_electronico.modelo.Consulta;
@@ -640,6 +643,65 @@ public class ReporteServicio {
             }
         }
 
+        // =========================================================
+        // CREACIÓN DE GRÁFICA DE BARRAS: TOTAL DE CONSULTAS POR MOTIVO
+        // =========================================================
+
+        if (!diagnosticos.isEmpty()) {
+            int semanasCount = consultasSemanas.size();
+
+            int tituloDiagnosticoRow = 3;
+            int firstDataRow = tituloDiagnosticoRow + 1; // fila TOTAL
+            int lastDataRow = firstDataRow + diagnosticos.size(); // TOTAL + todas las causas
+
+            int categoriaCol = 0;
+            int totalCol = 1 + semanasCount;
+
+            if (sheet instanceof XSSFSheet xssfSheet) {
+                XSSFDrawing drawing = xssfSheet.createDrawingPatriarch();
+                CreationHelper helper = workbook.getCreationHelper();
+
+                ClientAnchor anchor = helper.createClientAnchor();
+                // Columna H es índice 7 (A=0, B=1, ... H=7)
+                anchor.setCol1(7);
+                anchor.setRow1(lastDataRow + 2);
+                // Ancho aproximado: hasta la columna N (índice 13)
+                anchor.setCol2(13);
+                anchor.setRow2(lastDataRow + 20);
+
+                XSSFChart chart = drawing.createChart(anchor);
+                chart.setTitleText("Consultas por motivo");
+                chart.setTitleOverlay(false);
+
+                XDDFChartLegend legend = chart.getOrAddLegend();
+                legend.setPosition(LegendPosition.BOTTOM);
+
+                XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+                bottomAxis.setTitle("Motivo de consulta");
+                XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+                leftAxis.setTitle("Total de consultas");
+                leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+
+                XDDFDataSource<String> categorias = XDDFDataSourcesFactory.fromStringCellRange(
+                        xssfSheet,
+                        new CellRangeAddress(firstDataRow, lastDataRow, categoriaCol, categoriaCol)
+                );
+
+                XDDFNumericalDataSource<Double> valores = XDDFDataSourcesFactory.fromNumericCellRange(
+                        xssfSheet,
+                        new CellRangeAddress(firstDataRow, lastDataRow, totalCol, totalCol)
+                );
+
+                XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+                data.setBarDirection(BarDirection.COL);
+
+                XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(categorias, valores);
+                series.setTitle("Consultas por motivo", null);
+
+                chart.plot(data);
+            }
+        }
+
     }
 
 
@@ -702,7 +764,25 @@ public class ReporteServicio {
         }
 
 
-        // --- 3. AGRUPACIÓN Y CONTEO POR SEMANA ---
+        // --- 3. FILA TOTAL GLOBAL (PRIMERA FILA DE DATOS) ---
+
+        long totalGlobal = consultasPorSemana.values()
+                .stream()
+                .mapToLong(List::size)
+                .sum();
+
+        Row totalRow = sheet.createRow(rowNum++);
+
+        Cell totalLabelCell = totalRow.createCell(0);
+        totalLabelCell.setCellValue("TOTAL");
+        totalLabelCell.setCellStyle(estiloSubtitulo);
+
+        Cell totalGlobalCell = totalRow.createCell(totalColumns - 1);
+        totalGlobalCell.setCellValue(totalGlobal);
+        totalGlobalCell.setCellStyle(estiloNormal);
+
+
+        // --- 4. AGRUPACIÓN Y CONTEO POR SEMANA ---
 
         // Mapa: Diagnóstico (String) -> Semana (String) -> Conteo (Long)
         Map<String, Map<String, Long>> resumenPorDiagnostico = new HashMap<>();
@@ -725,7 +805,7 @@ public class ReporteServicio {
             }
         }
 
-        // --- 4. ESCRITURA DE DATOS FILA POR FILA ---
+        // --- 5. ESCRITURA DE DATOS FILA POR FILA (POR DIAGNÓSTICO) ---
 
         // La iteración debe hacerse sobre la lista maestra para asegurar el orden y las filas con conteo cero.
         for (Diagnostico diagnostico : diagnosticosMaestros) {
