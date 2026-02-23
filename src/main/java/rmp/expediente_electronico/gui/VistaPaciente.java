@@ -73,7 +73,7 @@ public class VistaPaciente extends javax.swing.JFrame {
                     paciente.getApellidos(),
                     paciente.getSexo(),
                     paciente.getProgramaAcademico(),
-                    paciente.getFechaNacimiento(),
+                    paciente.getEdad(),
             };
             this.tablaModelo.addRow(renglonPaciente);
         });
@@ -95,9 +95,9 @@ public class VistaPaciente extends javax.swing.JFrame {
             apellidosTexto.requestFocusInWindow();
             return;
         }
-        if(fechaNacimiento.getDate().equals("")){
-            mostrarMensaje("La fecha de nacimiento es requerida");
-            fechaNacimiento.requestFocusInWindow();
+        if(edadTexto.getText().equals("")){
+            mostrarMensaje("La edad es requerida");
+            edadTexto.requestFocusInWindow();
             return;
         }
 
@@ -105,13 +105,20 @@ public class VistaPaciente extends javax.swing.JFrame {
         var nombre = nombresTexto.getText();
         var apellido = apellidosTexto.getText();
         var sexo = (String) sexoComboBox.getSelectedItem();
-        java.sql.Date fechaNac = new java.sql.Date(fechaNacimiento.getDate().getTime());
+        Integer edad = null;
+        try {
+            edad = Integer.parseInt(edadTexto.getText());
+        } catch (NumberFormatException e) {
+            mostrarMensaje("La edad debe ser un número válido");
+            edadTexto.requestFocusInWindow();
+            return;
+        }
         String programaAca = carrerasComboBox.getSelectedItem().toString();
 
         paciente.setNombres(nombre);
         paciente.setApellidos(apellido);
         paciente.setMatricula(matricula);
-        paciente.setFechaNacimiento(fechaNac);
+        paciente.setEdad(edad);
         paciente.setProgramaAcademico(programaAca);
         paciente.setSexo(sexo);
 
@@ -124,7 +131,7 @@ public class VistaPaciente extends javax.swing.JFrame {
             mostrarMensaje("Datos del paciente actualizados");
         }
         if(vistaMain != null){
-            vistaMain.listarPacientes();
+            vistaMain.listarConsultas();
         }
         limpiarFormulario();
         listarPacientes();
@@ -151,7 +158,11 @@ public class VistaPaciente extends javax.swing.JFrame {
             nombresTexto.setText(paciente.getNombres());
             apellidosTexto.setText(paciente.getApellidos());
             carrerasComboBox.setSelectedItem(paciente.getProgramaAcademico());
-            fechaNacimiento.setDate(paciente.getFechaNacimiento());
+            if(paciente.getEdad() != null){
+                edadTexto.setText(paciente.getEdad().toString());
+            } else {
+                edadTexto.setText("");
+            }
             sexoComboBox.setSelectedItem(paciente.getSexo());
         }
     }
@@ -172,7 +183,11 @@ public class VistaPaciente extends javax.swing.JFrame {
         nombresTexto.setText(paciente.getNombres());
         apellidosTexto.setText(paciente.getApellidos());
         carrerasComboBox.setSelectedItem(paciente.getProgramaAcademico());
-        fechaNacimiento.setDate(paciente.getFechaNacimiento());
+        if(paciente.getEdad() != null){
+            edadTexto.setText(paciente.getEdad().toString());
+        } else {
+            edadTexto.setText("");
+        }
         sexoComboBox.setSelectedItem(paciente.getSexo());
     }
 //
@@ -186,7 +201,7 @@ public class VistaPaciente extends javax.swing.JFrame {
         nombresTexto.setText("");
         matriculaTexto.setText("");
         apellidosTexto.setText("");
-        fechaNacimiento.setDate(null);
+        edadTexto.setText("");
         buscarPacienteField.setText("");
         paciente = new Paciente();
         listarPacientes();
@@ -211,7 +226,7 @@ public class VistaPaciente extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         matriculaTexto = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        fechaNacimiento = new com.toedter.calendar.JDateChooser();
+        edadTexto = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         nombresTexto = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -249,9 +264,9 @@ public class VistaPaciente extends javax.swing.JFrame {
         bg.add(matriculaTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, 250, 30));
 
         jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
-        jLabel6.setText("Fecha de nacimiento");
+        jLabel6.setText("Edad");
         bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, -1, -1));
-        bg.add(fechaNacimiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 250, 280, 30));
+        bg.add(edadTexto, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 250, 280, 30));
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
         jLabel3.setText("Nombres");
@@ -365,7 +380,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private void regresarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
         this.setVisible(false);
         if(vistaMain != null){
-            vistaMain.listarPacientes();
+            vistaMain.listarConsultas();
             vistaMain.setVisible(true);
         }
     }//GEN-LAST:event_regresarButtonActionPerformed
@@ -407,7 +422,7 @@ public class VistaPaciente extends javax.swing.JFrame {
     private javax.swing.JPanel bg;
     private javax.swing.JTextField buscarPacienteField;
     private javax.swing.JComboBox<String> carrerasComboBox;
-    private com.toedter.calendar.JDateChooser fechaNacimiento;
+    private javax.swing.JTextField edadTexto;
     private javax.swing.JButton guardarButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

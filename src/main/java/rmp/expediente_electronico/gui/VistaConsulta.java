@@ -15,9 +15,6 @@ import rmp.expediente_electronico.servicio.DiagnosticoServicio;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 
 import javax.swing.*;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -90,17 +87,20 @@ public class VistaConsulta extends javax.swing.JFrame {
         }
 
         Paciente paciente = (Paciente) pacientesComboBox.getSelectedItem();
-        Integer edad = calcularEdad(paciente.getFechaNacimiento());
         Float imc = ((Float) pesoSpinner.getValue()) / (((Float) alturaSpinner.getValue()) * ((Float) alturaSpinner.getValue()));
         String imcEstado = sacarImcEstado(imc);
-
-        consulta.setEdad(edad);
+        
+        // Validar edad del paciente
+        Integer edadPaciente = paciente.getEdad();
+        if(edadPaciente == null){
+            edadPaciente = 0; // Valor por defecto si es nulo
+        }
+        consulta.setEdad(edadPaciente);
         consulta.setAltura((Float) alturaSpinner.getValue());
         consulta.setPaciente(paciente);
         consulta.setImc(imc);
         consulta.setDiagnosticoKey((Diagnostico) diagnosticoComboBox.getSelectedItem());
         consulta.setDiagnostico(diagnosticoField.getText());
-        consulta.setFechaReg(java.sql.Date.valueOf(LocalDate.now()));
         consulta.setMedicamento(medicamentoField.getText());
         consulta.setImc_estado(imcEstado);
         consulta.setObservaciones(observacionesField.getText());
@@ -140,23 +140,6 @@ public class VistaConsulta extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this,mensaje);
     }
 
-    public int calcularEdad(java.util.Date fechaNacimiento) {
-        if (fechaNacimiento == null) {
-            return 0;
-        }
-
-        LocalDate nacimiento;
-
-        if (fechaNacimiento instanceof java.sql.Date) {
-            nacimiento = ((java.sql.Date) fechaNacimiento).toLocalDate();
-        } else {
-            nacimiento = fechaNacimiento.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-        }
-
-        return Period.between(nacimiento, LocalDate.now()).getYears();
-    }
 
     public void buscarPaciente(){
         if(buscarField.getText() == ""){
@@ -188,11 +171,10 @@ public class VistaConsulta extends javax.swing.JFrame {
     public void regresar(){
         this.setVisible(false);
         limpiarFormulario();
-        vistaMain.listarPacientes();
+        vistaMain.listarConsultas();
         vistaMain.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
