@@ -264,11 +264,15 @@ public class ReporteServicio {
             c8.setCellValue(consulta.getObservaciones());
             c8.setCellStyle(estiloNormal);
 
-            // Columna 9: Fecha (Texto/String de la Fecha)
+            // Columna 9: Fecha de la consulta (solo fecha, sin hora)
             Cell c9 = row.createCell(9);
-            c9.setCellValue(consulta.getFechaReg() != null ? consulta.getFechaReg().toString() : "");
+            if (consulta.getFechaReg() != null) {
+                java.time.LocalDate fecha = consulta.getFechaReg().toLocalDate();
+                c9.setCellValue(fecha.toString()); // yyyy-MM-dd
+            } else {
+                c9.setCellValue("");
+            }
             c9.setCellStyle(estiloNormal);
-
 
             // ----------------------------------------------------
             // APLICACIÓN DE ESTILO NÚMERO (Float)
@@ -1552,8 +1556,8 @@ public class ReporteServicio {
         rowIdx = escribirDatoResumen(sheet, rowIdx, "Programa", paciente.getProgramaAcademico(), estiloSubtitulo, estiloNormal);
         rowIdx = escribirDatoResumen(sheet, rowIdx, "Sexo", paciente.getSexo(), estiloSubtitulo, estiloNormal);
 
-        String fechaNacimiento = paciente.getFechaNacimiento() != null ? new SimpleDateFormat("dd/MM/yyyy").format(paciente.getFechaNacimiento()) : "No registrado";
-        rowIdx = escribirDatoResumen(sheet, rowIdx, "Fecha de nacimiento", fechaNacimiento, estiloSubtitulo, estiloNormal);
+        String edad = paciente.getEdad() != null ? paciente.getEdad().toString() : "No registrado";
+        rowIdx = escribirDatoResumen(sheet, rowIdx, "Edad", edad, estiloSubtitulo, estiloNormal);
 
         escribirDatoResumen(sheet, rowIdx, "Total de consultas registradas", String.valueOf(totalConsultas), estiloSubtitulo, estiloNormal);
 

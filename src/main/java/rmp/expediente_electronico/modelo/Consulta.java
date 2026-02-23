@@ -3,7 +3,7 @@ package rmp.expediente_electronico.modelo;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 @Data
