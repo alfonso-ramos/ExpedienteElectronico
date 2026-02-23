@@ -168,7 +168,7 @@ public class ReporteServicio {
         Map<String, List<Consulta>> consultasMensuales = consultas.stream()
                 .filter(c -> c.getFechaReg() != null)
                 .collect(Collectors.groupingBy(consulta -> {
-                    LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate fecha = consulta.getFechaReg().toLocalDate();
                     int mesNum = fecha.getMonth().getValue();
                     return MESES[mesNum-1];
                 }));
@@ -196,7 +196,7 @@ public class ReporteServicio {
         Map<String, List<Consulta>> consultasAgrupadas = consultas.stream()
                 .filter(c -> c.getFechaReg() != null)
                 .collect(Collectors.groupingBy(consulta -> {
-                    LocalDate fecha = consulta.getFechaReg().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate fecha = consulta.getFechaReg().toLocalDate();
                     // Calculamos la semana relativa al inicio del mes
                     int weekNum = fecha.get(weekFields.weekOfMonth());
                     int semanaAjustada = weekNum - firstWeekNum + 1;
