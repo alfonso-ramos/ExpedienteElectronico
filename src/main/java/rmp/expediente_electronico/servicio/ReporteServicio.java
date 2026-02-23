@@ -406,7 +406,12 @@ public class ReporteServicio {
                 diagnosticosList, estilos,secciones, tipo,workbook,
                 c -> c.getDiagnosticoKey() != null ? c.getDiagnosticoKey().toString() : "Sin diagnóstico");
 
-        if(tipo == 4) return;
+        if(tipo == 4){
+            // Autoajuste final de columnas
+            for (int col = 0; col <= secciones.length; col++) {
+                sheet.autoSizeColumn(col);
+            }
+        };
         // --- SECCIÓN CARRERAS ---
         rowNum = escribirSeccionGenerica(sheet, rowNum, consultas, "PROGRAMAS ACADÉMICOS",
                 Arrays.asList(programas), estilos,secciones, tipo, workbook,
