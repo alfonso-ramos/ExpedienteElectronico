@@ -26,4 +26,8 @@ public class Paciente {
     public String toString(){
         return matricula.concat(" - ".concat(nombres).concat(" ".concat(apellidos)));
     }
+
+    public String getNombreCompleto(){
+        return nombres + " " + apellidos;
+    }
 }
