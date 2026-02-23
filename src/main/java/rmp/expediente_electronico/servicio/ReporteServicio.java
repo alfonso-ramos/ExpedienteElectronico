@@ -486,24 +486,26 @@ public class ReporteServicio {
 
         XSSFDrawing drawing = xssfSheet.createDrawingPatriarch();
         CreationHelper helper = workbook.getCreationHelper();
-        int chartHeight = 16;
         int categoriaCol = 0;
+        int anchoGrafico = 10;
+        int altoGrafico = 14;
         Cell seccionCell = sheet.getRow(filaInicio-1).getCell(0);
         Row fechaRow = sheet.getRow(1);
         for (int i = 0;i<numColumnas;i++){
             int weekCol = 1 + i; // columna de la semana i (1 = Semana 1, 2 = Semana 2, ...)
 
             ClientAnchor anchorSemana = helper.createClientAnchor();
-            anchorSemana.setCol1(7);
             // ubicamos cada grafica semanal debajo de la grafica mensual, una debajo de otra
-            int baseRow = 21 + i * (chartHeight + 2); // empieza debajo de la principal
-            anchorSemana.setRow1(baseRow);
-            // hasta columna R (índice 17)
-            anchorSemana.setCol2(17);
-            anchorSemana.setRow2(baseRow + chartHeight);
+            int baseRow = (numColumnas + 2) + (i * (anchoGrafico+1));
+
+            anchorSemana.setCol1(baseRow);
+            anchorSemana.setCol2(baseRow + anchoGrafico);
+
+            anchorSemana.setRow1(filaInicio -1);
+            anchorSemana.setRow2(filaInicio - 1 + altoGrafico);
+
 
             XSSFChart chartSemana = drawing.createChart(anchorSemana);
-//            chartSemana.setTitleText("Consultas Semana " + (i + 1));
             chartSemana.setTitleText(seccionCell.getStringCellValue() + " " + fechaRow.getCell(weekCol).getStringCellValue());
             chartSemana.setTitleOverlay(false);
 
