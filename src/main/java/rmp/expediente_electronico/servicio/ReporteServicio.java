@@ -4,7 +4,7 @@ import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -403,18 +403,18 @@ public class ReporteServicio {
                 .toList();
 
         rowNum = escribirSeccionGenerica(sheet, rowNum, consultas, "CAUSAS DE CONSULTA",
-                diagnosticosList, estilos,secciones, tipo,
+                diagnosticosList, estilos,secciones, tipo,workbook,
                 c -> c.getDiagnosticoKey() != null ? c.getDiagnosticoKey().toString() : "Sin diagnóstico");
 
         if(tipo == 4) return;
         // --- SECCIÓN CARRERAS ---
         rowNum = escribirSeccionGenerica(sheet, rowNum, consultas, "PROGRAMAS ACADÉMICOS",
-                Arrays.asList(programas), estilos,secciones, tipo,
+                Arrays.asList(programas), estilos,secciones, tipo, workbook,
                 c -> c.getPaciente() != null ? c.getPaciente().getProgramaAcademico() : "N/A");
 
         // --- SECCIÓN SEXO ---
         rowNum = escribirSeccionGenerica(sheet, rowNum, consultas, "GRUPOS (SEXO)",
-                Arrays.asList("Hombre", "Mujer"), estilos,secciones, tipo,
+                Arrays.asList("Hombre", "Mujer"), estilos,secciones, tipo, workbook,
                 c -> c.getPaciente() != null ? c.getPaciente().getSexo() : "N/A");
 
         // Autoajuste final de columnas
@@ -432,7 +432,10 @@ public class ReporteServicio {
             EstiloHelper estilos,
             String[] headersColumnas,
             int tipoReporte,
+            Workbook workbook,
             java.util.function.Function<Consulta, String> extractor) { // Aquí recibes la lambda (c -> ...)
+
+        int filaInicioDatos = rowNum+1;
 
         // 1. Fila del Subtítulo de la Sección
         Row rowSeccion = sheet.createRow(rowNum++);
@@ -470,8 +473,67 @@ public class ReporteServicio {
                 cellDato.setCellStyle(estilos.getNormal());
             }
         }
+        int filaFinDatos = rowNum;
+        if (tipoReporte != 4 && !filasMaestras.isEmpty()) {
+            añadirGraficoSeccion(sheet, filaInicioDatos, filaFinDatos, headersColumnas.length, tituloSeccion, workbook);
+        }
 
-        return rowNum; // Espacio en blanco para la siguiente sección
+        return rowNum;
+    }
+
+    private void añadirGraficoSeccion(Sheet sheet, int filaInicio, int filaFin, int numColumnas, String titulo, Workbook workbook) {
+        if (! (sheet instanceof XSSFSheet xssfSheet)) return;
+
+        XSSFDrawing drawing = xssfSheet.createDrawingPatriarch();
+        CreationHelper helper = workbook.getCreationHelper();
+        int chartHeight = 16;
+        int categoriaCol = 0;
+        Cell seccionCell = sheet.getRow(filaInicio-1).getCell(0);
+        Row fechaRow = sheet.getRow(1);
+        for (int i = 0;i<numColumnas;i++){
+            int weekCol = 1 + i; // columna de la semana i (1 = Semana 1, 2 = Semana 2, ...)
+
+            ClientAnchor anchorSemana = helper.createClientAnchor();
+            anchorSemana.setCol1(7);
+            // ubicamos cada grafica semanal debajo de la grafica mensual, una debajo de otra
+            int baseRow = 21 + i * (chartHeight + 2); // empieza debajo de la principal
+            anchorSemana.setRow1(baseRow);
+            // hasta columna R (índice 17)
+            anchorSemana.setCol2(17);
+            anchorSemana.setRow2(baseRow + chartHeight);
+
+            XSSFChart chartSemana = drawing.createChart(anchorSemana);
+//            chartSemana.setTitleText("Consultas Semana " + (i + 1));
+            chartSemana.setTitleText(seccionCell.getStringCellValue() + " " + fechaRow.getCell(weekCol).getStringCellValue());
+            chartSemana.setTitleOverlay(false);
+
+            XDDFChartLegend legendSemana = chartSemana.getOrAddLegend();
+            legendSemana.setPosition(LegendPosition.BOTTOM);
+
+            XDDFCategoryAxis bottomAxisSemana = chartSemana.createCategoryAxis(AxisPosition.BOTTOM);
+            bottomAxisSemana.setTitle(seccionCell.getStringCellValue().toLowerCase(Locale.ROOT));
+            XDDFValueAxis leftAxisSemana = chartSemana.createValueAxis(AxisPosition.LEFT);
+            leftAxisSemana.setTitle("Total de consultas");
+            leftAxisSemana.setCrosses(AxisCrosses.AUTO_ZERO);
+
+            XDDFDataSource<String> categoriasSemana = XDDFDataSourcesFactory.fromStringCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(filaInicio, filaFin, categoriaCol, categoriaCol)
+            );
+
+            XDDFNumericalDataSource<Double> valoresSemana = XDDFDataSourcesFactory.fromNumericCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(filaInicio, filaFin, weekCol, weekCol)
+            );
+
+            XDDFBarChartData dataSemana = (XDDFBarChartData) chartSemana.createData(ChartTypes.BAR, bottomAxisSemana, leftAxisSemana);
+            dataSemana.setBarDirection(BarDirection.COL);
+
+            XDDFBarChartData.Series seriesSemana = (XDDFBarChartData.Series) dataSemana.addSeries(categoriasSemana, valoresSemana);
+            seriesSemana.setTitle(seccionCell.getStringCellValue() + " " + fechaRow.getCell(weekCol).getStringCellValue(), null);
+
+            chartSemana.plot(dataSemana);
+        }
     }
 
     public String[] getSecciones(int tipo, Map<String, List<Consulta>> consultasFiltradas) {
@@ -729,19 +791,5 @@ public class ReporteServicio {
 */
     public void mostrarMensaje(String mensaje){
         JOptionPane.showMessageDialog(null,mensaje);
-    }
-
-    private int escribirDatoResumen(Sheet sheet, int rowIdx, String etiqueta, String valor, CellStyle estiloSubtitulo, CellStyle estiloNormal) {
-        Row row = sheet.createRow(rowIdx++);
-        row.setHeight(ALTURA_SUBTITULO);
-        Cell etiquetaCell = row.createCell(0);
-        etiquetaCell.setCellStyle(estiloSubtitulo);
-        etiquetaCell.setCellValue(etiqueta);
-
-        Cell valorCell = row.createCell(1);
-        valorCell.setCellStyle(estiloNormal);
-        valorCell.setCellValue(valor != null ? valor : "No registrado");
-        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return rowIdx;
     }
 }
