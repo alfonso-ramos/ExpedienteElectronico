@@ -16,8 +16,10 @@ import rmp.expediente_electronico.modelo.Paciente;
 import rmp.expediente_electronico.servicio.PacienteServicio;
 import rmp.expediente_electronico.servicio.ReporteServicio;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class VistaReporte extends JFrame {
@@ -36,6 +38,7 @@ public class VistaReporte extends JFrame {
 
     @Autowired
     public VistaReporte(ReporteServicio reporteServicio, PacienteServicio pacienteServicio){
+        configurarIcono();
         this.reporteServicio = reporteServicio;
         this.pacienteServicio = pacienteServicio;
 
@@ -43,6 +46,16 @@ public class VistaReporte extends JFrame {
         buscarPacientesInput.setText("");
         configurarBusquedaPacientes();
         listarPacientes();
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }
+
+    public void configurarIcono(){
+        try{
+            Image icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/upsinIcon.png"))).getImage();
+            this.setIconImage(icon);
+        }catch (Exception e){
+            System.err.println("No se pudo cargar el icono "+ e.getMessage());
+        }
     }
 
     public void setProgramas(String[] programas){
@@ -181,8 +194,12 @@ public class VistaReporte extends JFrame {
         pacientesComboBox = new javax.swing.JComboBox<>();
         buscarPacientesInput = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
         regresarButton = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -191,80 +208,80 @@ public class VistaReporte extends JFrame {
         bg.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         inicioReporte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 250, 40));
+        bg.add(inicioReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 460, 250, 40));
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel3.setText("Fecha final");
-        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 250, -1, -1));
+        bg.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 510, -1, -1));
 
         finReporte.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 250, 40));
+        bg.add(finReporte, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 550, 250, 40));
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel2.setText("Año");
-        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, -1, -1));
+        bg.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 410, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel1.setText("Generar reporte por año");
-        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 60, -1, 50));
+        jLabel1.setText("Generar reporte anual");
+        bg.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 330, -1, 50));
 
         jLabel4.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel4.setText("Generar reporte por paciente");
-        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 550, -1, 50));
+        bg.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 620, -1, 50));
 
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel5.setText("Fecha de inicio");
-        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
+        bg.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, -1, -1));
 
         mesReporteMensualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 160, 140, 50));
+        bg.add(mesReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 450, 150, 50));
 
         generarAnualButton.setBackground(new java.awt.Color(26, 188, 156));
         generarAnualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         generarAnualButton.setForeground(new java.awt.Color(255, 255, 255));
-        generarAnualButton.setText("Generar reporte");
+        generarAnualButton.setText("Generar reporte anual");
         generarAnualButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 generarAnualButtonActionPerformed(evt);
             }
         });
-        bg.add(generarAnualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 270, 180, 60));
+        bg.add(generarAnualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 510, 260, 60));
 
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel6.setText("Generar reporte por mes");
-        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 60, -1, 50));
+        jLabel6.setText("Generar reporte mensual");
+        bg.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 330, -1, 50));
 
         yearReporteAnualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 160, 140, 50));
+        bg.add(yearReporteAnualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 440, 140, 50));
 
         jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel7.setText("Mes");
-        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 130, -1, -1));
+        bg.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 400, -1, -1));
 
         generarMensualButton.setBackground(new java.awt.Color(26, 188, 156));
         generarMensualButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         generarMensualButton.setForeground(new java.awt.Color(255, 255, 255));
-        generarMensualButton.setText("Generar reporte");
+        generarMensualButton.setText("Generar reporte mensual");
         generarMensualButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 generarMensualButtonActionPerformed(evt);
             }
         });
-        bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 270, 180, 60));
+        bg.add(generarMensualButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 530, 250, 60));
 
         generarPorPacienteButton.setBackground(new java.awt.Color(26, 188, 156));
         generarPorPacienteButton.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         generarPorPacienteButton.setForeground(new java.awt.Color(255, 255, 255));
-        generarPorPacienteButton.setText("Generar reporte");
+        generarPorPacienteButton.setText("Generar reporte del paciente");
         generarPorPacienteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 generarPorPacienteButtonActionPerformed(evt);
             }
         });
-        bg.add(generarPorPacienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 700, 180, 60));
+        bg.add(generarPorPacienteButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 720, 290, 60));
 
         yearReporteMensualChooser.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 160, 120, 50));
+        bg.add(yearReporteMensualChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 450, 120, 50));
 
         generarPorFechaButton1.setBackground(new java.awt.Color(26, 188, 156));
         generarPorFechaButton1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -275,19 +292,16 @@ public class VistaReporte extends JFrame {
                 generarPorFechaButton1ActionPerformed(evt);
             }
         });
-        bg.add(generarPorFechaButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 180, 60));
+        bg.add(generarPorFechaButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 490, 170, 70));
 
-        pacientesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>());
-        bg.add(pacientesComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 710, 510, 50));
+        bg.add(pacientesComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 760, 510, 50));
 
         buscarPacientesInput.setText("Buscar Paciente");
-        bg.add(buscarPacientesInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 630, 510, 50));
+        bg.add(buscarPacientesInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 690, 510, 50));
 
         jLabel8.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel8.setText("Generar reporte por fecha");
-        bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, 50));
-
-        jPanel1.setBackground(new java.awt.Color(56, 89, 152));
+        bg.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 330, -1, 50));
 
         regresarButton.setBackground(new java.awt.Color(255, 0, 51));
         regresarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -298,39 +312,36 @@ public class VistaReporte extends JFrame {
                 regresarButtonActionPerformed(evt);
             }
         });
+        bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 210, 150, 50));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(38, Short.MAX_VALUE)
-                .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addComponent(regresarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(768, Short.MAX_VALUE))
-        );
+        jLabel9.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel9.setText("Generacion de Reportes");
+        bg.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 130, -1, -1));
+
+        jLabel10.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel10.setText("Registro de Actividades Diarias en Consulta Externa");
+        bg.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, -1, -1));
+
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logoUpsin.png"))); // NOI18N
+        bg.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/med(1).jpg"))); // NOI18N
+        bg.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(1410, 10, -1, -1));
+
+        jLabel13.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel13.setText("Expediente Electronico");
+        bg.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 70, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, 1310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 1614, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 855, Short.MAX_VALUE)
         );
 
         pack();
@@ -338,7 +349,6 @@ public class VistaReporte extends JFrame {
 
     private void regresarButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_regresarButtonActionPerformed
         setVisible(false);
-        vistaMain.setVisible(true);
     }//GEN-LAST:event_regresarButtonActionPerformed
 
     private void generarAnualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarAnualButtonActionPerformed
@@ -367,6 +377,10 @@ public class VistaReporte extends JFrame {
     private javax.swing.JButton generarPorPacienteButton;
     private com.toedter.calendar.JDateChooser inicioReporte;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -374,7 +388,7 @@ public class VistaReporte extends JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel9;
     private com.toedter.calendar.JMonthChooser mesReporteMensualChooser;
     private javax.swing.JComboBox<Paciente> pacientesComboBox;
     private javax.swing.JButton regresarButton;
