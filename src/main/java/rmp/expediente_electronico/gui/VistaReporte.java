@@ -314,17 +314,17 @@ public class VistaReporte extends JFrame {
         });
         bg.add(regresarButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 210, 150, 50));
 
-        jLabel9.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Liberation Sans", 1, 36)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 102));
         jLabel9.setText("Generacion de Reportes");
-        bg.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 130, -1, -1));
+        bg.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 130, -1, -1));
 
         jLabel10.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel10.setText("Registro de Actividades Diarias en Consulta Externa");
         bg.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, -1, -1));
 
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logoUpsin.png"))); // NOI18N
-        bg.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        bg.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 0, -1, -1));
 
         jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/med(1).jpg"))); // NOI18N
         bg.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(1410, 10, -1, -1));

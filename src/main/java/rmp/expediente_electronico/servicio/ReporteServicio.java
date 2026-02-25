@@ -310,11 +310,6 @@ public class ReporteServicio {
             Cell c9 = row.createCell(9);
             c9.setCellValue(consulta.getFechaReg() != null ? consulta.getFechaReg().toString() : "");
             c9.setCellStyle(estilos.getNormal());
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c06f5c5bcd3dd944835c325bd965652a8feacac
-
             // ----------------------------------------------------
             // APLICACIÓN DE ESTILO NÚMERO (Float)
             // ----------------------------------------------------
@@ -576,5 +571,5 @@ public class ReporteServicio {
     }
     public void mostrarMensaje(String mensaje){
         JOptionPane.showMessageDialog(null,mensaje);
-    }
+    } 
 }
