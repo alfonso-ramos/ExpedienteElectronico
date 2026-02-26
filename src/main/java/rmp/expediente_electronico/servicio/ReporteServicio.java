@@ -538,90 +538,62 @@ public class ReporteServicio {
         int anchoGrafico = 10;
         int altoGrafico = 14;
 
-        // Si el usuario pidió rangos fijos para estas secciones, los respetamos
-        if ("CAUSAS DE CONSULTA".equalsIgnoreCase(titulo)) {
-            // Rango fijo: A5:A16 y B5:B16 (índices 0-based: filas 4-15, col 0 y 1)
-            ClientAnchor anchor = helper.createClientAnchor();
-            anchor.setCol1(1);
-            anchor.setCol2(1 + anchoGrafico);
-            anchor.setRow1(3); // un poco arriba del rango de datos
-            anchor.setRow2(3 + altoGrafico);
+        // Si el título coincide con una de las secciones especiales,
+        // usamos filas fijas pero seguimos creando una gráfica por columna (semana/mes/total).
+        if ("CAUSAS DE CONSULTA".equalsIgnoreCase(titulo) || "PROGRAMAS ACADÉMICOS".equalsIgnoreCase(titulo)) {
+            Row fechaRow = sheet.getRow(1);
 
-            XSSFChart chart = drawing.createChart(anchor);
-            chart.setTitleText("CAUSAS DE CONSULTA");
-            chart.setTitleOverlay(false);
+            // Filas fijas para cada sección
+            int filaInicioFija = "CAUSAS DE CONSULTA".equalsIgnoreCase(titulo) ? 4 : 17;  // A5 o A18 (0-based)
+            int filaFinFija   = "CAUSAS DE CONSULTA".equalsIgnoreCase(titulo) ? 15 : 32; // A16 o A33 (0-based)
 
-            XDDFChartLegend legend = chart.getOrAddLegend();
-            legend.setPosition(LegendPosition.BOTTOM);
+            for (int i = 0; i < numColumnas; i++) {
+                int weekCol = 1 + i; // columna 1 = primera semana/mes, última = Total
 
-            XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-            bottomAxis.setTitle("causas de consulta");
-            XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-            leftAxis.setTitle("Total de consultas");
-            leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+                ClientAnchor anchorSemana = helper.createClientAnchor();
+                int baseRow = (numColumnas + 2) + (i * (anchoGrafico + 1));
 
-            XDDFDataSource<String> categorias = XDDFDataSourcesFactory.fromStringCellRange(
-                    xssfSheet,
-                    new CellRangeAddress(4, 15, 0, 0) // A5:A16
-            );
+                anchorSemana.setCol1(baseRow);
+                anchorSemana.setCol2(baseRow + anchoGrafico);
 
-            XDDFNumericalDataSource<Double> valores = XDDFDataSourcesFactory.fromNumericCellRange(
-                    xssfSheet,
-                    new CellRangeAddress(4, 15, 1, 1) // B5:B16
-            );
+                anchorSemana.setRow1(filaInicioFija - 1); // un poco arriba del bloque de datos
+                anchorSemana.setRow2(filaInicioFija - 1 + altoGrafico);
 
-            XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-            data.setBarDirection(BarDirection.COL);
+                XSSFChart chartSemana = drawing.createChart(anchorSemana);
+                chartSemana.setTitleText(titulo + " " + fechaRow.getCell(weekCol).getStringCellValue());
+                chartSemana.setTitleOverlay(false);
 
-            XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(categorias, valores);
-            series.setTitle("Total", null);
+                XDDFChartLegend legendSemana = chartSemana.getOrAddLegend();
+                legendSemana.setPosition(LegendPosition.BOTTOM);
 
-            chart.plot(data);
+                XDDFCategoryAxis bottomAxisSemana = chartSemana.createCategoryAxis(AxisPosition.BOTTOM);
+                bottomAxisSemana.setTitle(titulo.toLowerCase(Locale.ROOT));
+                XDDFValueAxis leftAxisSemana = chartSemana.createValueAxis(AxisPosition.LEFT);
+                leftAxisSemana.setTitle("Total de consultas");
+                leftAxisSemana.setCrosses(AxisCrosses.AUTO_ZERO);
+
+                XDDFDataSource<String> categoriasSemana = XDDFDataSourcesFactory.fromStringCellRange(
+                        xssfSheet,
+                        new CellRangeAddress(filaInicioFija, filaFinFija, 0, 0)
+                );
+
+                XDDFNumericalDataSource<Double> valoresSemana = XDDFDataSourcesFactory.fromNumericCellRange(
+                        xssfSheet,
+                        new CellRangeAddress(filaInicioFija, filaFinFija, weekCol, weekCol)
+                );
+
+                XDDFBarChartData dataSemana = (XDDFBarChartData) chartSemana.createData(ChartTypes.BAR, bottomAxisSemana, leftAxisSemana);
+                dataSemana.setBarDirection(BarDirection.COL);
+
+                XDDFBarChartData.Series seriesSemana = (XDDFBarChartData.Series) dataSemana.addSeries(categoriasSemana, valoresSemana);
+                seriesSemana.setTitle(titulo + " " + fechaRow.getCell(weekCol).getStringCellValue(), null);
+
+                chartSemana.plot(dataSemana);
+            }
             return;
         }
 
-        if ("PROGRAMAS ACADÉMICOS".equalsIgnoreCase(titulo)) {
-            // Rango fijo: A18:A33 y B18:B33 (índices 0-based: filas 17-32, col 0 y 1)
-            ClientAnchor anchor = helper.createClientAnchor();
-            anchor.setCol1(1);
-            anchor.setCol2(1 + anchoGrafico);
-            anchor.setRow1(16);
-            anchor.setRow2(16 + altoGrafico);
-
-            XSSFChart chart = drawing.createChart(anchor);
-            chart.setTitleText("PROGRAMAS ACADÉMICOS - Total");
-            chart.setTitleOverlay(false);
-
-            XDDFChartLegend legend = chart.getOrAddLegend();
-            legend.setPosition(LegendPosition.BOTTOM);
-
-            XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-            bottomAxis.setTitle("programas académicos");
-            XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-            leftAxis.setTitle("Total de consultas");
-            leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-
-            XDDFDataSource<String> categorias = XDDFDataSourcesFactory.fromStringCellRange(
-                    xssfSheet,
-                    new CellRangeAddress(17, 32, 0, 0) // A18:A33
-            );
-
-            XDDFNumericalDataSource<Double> valores = XDDFDataSourcesFactory.fromNumericCellRange(
-                    xssfSheet,
-                    new CellRangeAddress(17, 32, 1, 1) // B18:B33
-            );
-
-            XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-            data.setBarDirection(BarDirection.COL);
-
-            XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(categorias, valores);
-            series.setTitle("Total", null);
-
-            chart.plot(data);
-            return;
-        }
-
-        // Comportamiento original para el resto de secciones
+        // Comportamiento original para el resto de secciones (por ejemplo, GRUPOS (SEXO))
         int categoriaCol = 0;
         Cell seccionCell = sheet.getRow(filaInicio - 1).getCell(0);
         Row fechaRow = sheet.getRow(1);
