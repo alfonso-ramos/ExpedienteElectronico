@@ -1,6 +1,5 @@
 package rmp.expediente_electronico.servicio;
 
-import com.toedter.calendar.JDateChooser;
 import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -17,6 +16,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -398,11 +398,35 @@ public class ReporteServicio {
         // Asegúrate de que 'diagnosticos' sea accesible (inyectado o pasado por parámetro)
         var diagnosticosList = diagnosticoServicio.listarDiagnosticos().stream()
                 .map(Object::toString)
+                .filter(diagnostico -> {
+                    if (diagnostico == null) return false;
+                    String norm = normalizarTexto(diagnostico);
+                    return !norm.equals("PROGRAMAS ACADEMICOS") &&
+                           !norm.equals("GRUPOS SEXO") &&
+                           !norm.equals("TOTAL") &&
+                           !norm.equals("HOMBRE") &&
+                           !norm.equals("MUJER");
+                })
                 .toList();
 
         rowNum = escribirSeccionGenerica(sheet, rowNum, consultas, "CAUSAS DE CONSULTA",
                 diagnosticosList, estilos,secciones, tipo,workbook,
-                c -> c.getDiagnosticoKey() != null ? c.getDiagnosticoKey().toString() : "Sin diagnóstico");
+                c -> {
+                    String diagnostico = c.getDiagnosticoKey() != null ? c.getDiagnosticoKey().toString() : null;
+                    if (diagnostico == null) {
+                        return null;
+                    }
+                    String norm = normalizarTexto(diagnostico);
+                    // Excluir categorías que no son diagnósticos médicos devolviendo null
+                    if (norm.equals("PROGRAMAS ACADEMICOS") ||
+                        norm.equals("GRUPOS SEXO") ||
+                        norm.equals("HOMBRE") ||
+                        norm.equals("MUJER") ||
+                        norm.equals("TOTAL")) {
+                        return null;
+                    }
+                    return diagnostico;
+                });
 
         if(tipo == 4){
             // Autoajuste final de columnas
@@ -452,7 +476,23 @@ public class ReporteServicio {
             rowSeccion.createCell(i + 1).setCellStyle(estilos.getNegro());
         }
 
-        // 2. Escribir los datos fila por fila usando la lista maestra
+        // 2. Agregar fila de totales al principio
+        Row totalRow = sheet.createRow(rowNum++);
+        Cell totalLabelCell = totalRow.createCell(0);
+        totalLabelCell.setCellValue("TOTAL");
+        totalLabelCell.setCellStyle(estilos.getSubtitulo());
+        
+        // Calcular totales por columna
+        for (int i = 0; i < headersColumnas.length; i++) {
+            String columnaActual = headersColumnas[i];
+            long totalColumna = consultasPorTiempo.getOrDefault(columnaActual, new ArrayList<>()).size();
+            
+            Cell totalCell = totalRow.createCell(i + 1);
+            totalCell.setCellValue(totalColumna);
+            totalCell.setCellStyle(estilos.getSubtitulo());
+        }
+
+        // 3. Escribir los datos fila por fila usando la lista maestra
         for (String nombreFila : filasMaestras) {
             Row row = sheet.createRow(rowNum++);
 
@@ -468,7 +508,9 @@ public class ReporteServicio {
                 // Filtramos al vuelo: buscamos en la lista de ese tiempo cuántos coinciden con la fila
                 long conteo = consultasPorTiempo.getOrDefault(columnaActual, new ArrayList<>())
                         .stream()
-                        .filter(c -> nombreFila.equals(extractor.apply(c)))
+                        .map(extractor)
+                        .filter(Objects::nonNull)
+                        .filter(nombreFila::equals)
                         .count();
 
                 Cell cellDato = row.createCell(i + 1);
@@ -476,8 +518,12 @@ public class ReporteServicio {
                 cellDato.setCellStyle(estilos.getNormal());
             }
         }
+        
         int filaFinDatos = rowNum;
         if (tipoReporte != 4 && !filasMaestras.isEmpty()) {
+            // Usamos siempre el título de sección para que añadirGraficoSeccion
+            // pueda aplicar los rangos fijos A5:A16/B5:B16 y A18:A33/B18:B33
+            // cuando se trate de CAUSAS DE CONSULTA o PROGRAMAS ACADÉMICOS.
             añadirGraficoSeccion(sheet, filaInicioDatos, filaFinDatos, headersColumnas.length, tituloSeccion, workbook);
         }
 
@@ -485,28 +531,112 @@ public class ReporteServicio {
     }
 
     private void añadirGraficoSeccion(Sheet sheet, int filaInicio, int filaFin, int numColumnas, String titulo, Workbook workbook) {
-        if (! (sheet instanceof XSSFSheet xssfSheet)) return;
+        if (!(sheet instanceof XSSFSheet xssfSheet)) return;
 
         XSSFDrawing drawing = xssfSheet.createDrawingPatriarch();
         CreationHelper helper = workbook.getCreationHelper();
-        int categoriaCol = 0;
         int anchoGrafico = 10;
         int altoGrafico = 14;
-        Cell seccionCell = sheet.getRow(filaInicio-1).getCell(0);
+
+        // Si el usuario pidió rangos fijos para estas secciones, los respetamos
+        if ("CAUSAS DE CONSULTA".equalsIgnoreCase(titulo)) {
+            // Rango fijo: A5:A16 y B5:B16 (índices 0-based: filas 4-15, col 0 y 1)
+            ClientAnchor anchor = helper.createClientAnchor();
+            anchor.setCol1(1);
+            anchor.setCol2(1 + anchoGrafico);
+            anchor.setRow1(3); // un poco arriba del rango de datos
+            anchor.setRow2(3 + altoGrafico);
+
+            XSSFChart chart = drawing.createChart(anchor);
+            chart.setTitleText("CAUSAS DE CONSULTA");
+            chart.setTitleOverlay(false);
+
+            XDDFChartLegend legend = chart.getOrAddLegend();
+            legend.setPosition(LegendPosition.BOTTOM);
+
+            XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+            bottomAxis.setTitle("causas de consulta");
+            XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+            leftAxis.setTitle("Total de consultas");
+            leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+
+            XDDFDataSource<String> categorias = XDDFDataSourcesFactory.fromStringCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(4, 15, 0, 0) // A5:A16
+            );
+
+            XDDFNumericalDataSource<Double> valores = XDDFDataSourcesFactory.fromNumericCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(4, 15, 1, 1) // B5:B16
+            );
+
+            XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+            data.setBarDirection(BarDirection.COL);
+
+            XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(categorias, valores);
+            series.setTitle("Total", null);
+
+            chart.plot(data);
+            return;
+        }
+
+        if ("PROGRAMAS ACADÉMICOS".equalsIgnoreCase(titulo)) {
+            // Rango fijo: A18:A33 y B18:B33 (índices 0-based: filas 17-32, col 0 y 1)
+            ClientAnchor anchor = helper.createClientAnchor();
+            anchor.setCol1(1);
+            anchor.setCol2(1 + anchoGrafico);
+            anchor.setRow1(16);
+            anchor.setRow2(16 + altoGrafico);
+
+            XSSFChart chart = drawing.createChart(anchor);
+            chart.setTitleText("PROGRAMAS ACADÉMICOS - Total");
+            chart.setTitleOverlay(false);
+
+            XDDFChartLegend legend = chart.getOrAddLegend();
+            legend.setPosition(LegendPosition.BOTTOM);
+
+            XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+            bottomAxis.setTitle("programas académicos");
+            XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+            leftAxis.setTitle("Total de consultas");
+            leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+
+            XDDFDataSource<String> categorias = XDDFDataSourcesFactory.fromStringCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(17, 32, 0, 0) // A18:A33
+            );
+
+            XDDFNumericalDataSource<Double> valores = XDDFDataSourcesFactory.fromNumericCellRange(
+                    xssfSheet,
+                    new CellRangeAddress(17, 32, 1, 1) // B18:B33
+            );
+
+            XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+            data.setBarDirection(BarDirection.COL);
+
+            XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(categorias, valores);
+            series.setTitle("Total", null);
+
+            chart.plot(data);
+            return;
+        }
+
+        // Comportamiento original para el resto de secciones
+        int categoriaCol = 0;
+        Cell seccionCell = sheet.getRow(filaInicio - 1).getCell(0);
         Row fechaRow = sheet.getRow(1);
-        for (int i = 0;i<numColumnas;i++){
-            int weekCol = 1 + i; // columna de la semana i (1 = Semana 1, 2 = Semana 2, ...)
+
+        for (int i = 0; i < numColumnas; i++) {
+            int weekCol = 1 + i;
 
             ClientAnchor anchorSemana = helper.createClientAnchor();
-            // ubicamos cada grafica semanal debajo de la grafica mensual, una debajo de otra
-            int baseRow = (numColumnas + 2) + (i * (anchoGrafico+1));
+            int baseRow = (numColumnas + 2) + (i * (anchoGrafico + 1));
 
             anchorSemana.setCol1(baseRow);
             anchorSemana.setCol2(baseRow + anchoGrafico);
 
-            anchorSemana.setRow1(filaInicio -1);
+            anchorSemana.setRow1(filaInicio - 1);
             anchorSemana.setRow2(filaInicio - 1 + altoGrafico);
-
 
             XSSFChart chartSemana = drawing.createChart(anchorSemana);
             chartSemana.setTitleText(seccionCell.getStringCellValue() + " " + fechaRow.getCell(weekCol).getStringCellValue());
@@ -568,6 +698,13 @@ public class ReporteServicio {
             case 4 -> "";
             default -> "";
         };
+    }
+    
+    private String normalizarTexto(String texto) {
+        if (texto == null) return "";
+        String normalized = Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return normalized.toUpperCase(Locale.ROOT).trim();
     }
     public void mostrarMensaje(String mensaje){
         JOptionPane.showMessageDialog(null,mensaje);

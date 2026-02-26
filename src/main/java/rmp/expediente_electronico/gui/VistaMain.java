@@ -102,12 +102,12 @@ public class VistaMain extends javax.swing.JFrame {
     public void listarConsultas(){
         List<Consulta> consultas = consultaServicio.listarConsultas();
 
-        // Ordenar por fecha de consulta (más recientes primero). Las sin fecha quedan al final.
+        // Ordenar por ID de consulta en orden ascendente (las primeras consultas arriba)
         consultas.sort((c1, c2) -> {
-            if (c1.getFechaReg() == null && c2.getFechaReg() == null) return 0;
-            if (c1.getFechaReg() == null) return 1;
-            if (c2.getFechaReg() == null) return -1;
-            return c2.getFechaReg().compareTo(c1.getFechaReg());
+            if (c1.getIdConsulta() == null && c2.getIdConsulta() == null) return 0;
+            if (c1.getIdConsulta() == null) return 1;
+            if (c2.getIdConsulta() == null) return -1;
+            return c1.getIdConsulta().compareTo(c2.getIdConsulta());
         });
 
         listar(consultas);
@@ -211,7 +211,15 @@ public class VistaMain extends javax.swing.JFrame {
                 jTextField1.setText("");
             }
         } else {
-            limpiarTodosLosCampos();
+            // Limpiar solo campos del paciente, mantener datos de consulta
+            nombreTextField.setText("");
+            apellidoTextField.setText("");
+            ProgramaAcademicoComboBox1.setSelectedIndex(-1);
+            SexoComboBox.setSelectedIndex(-1);
+            jTextField1.setText("");
+            
+            // Mover foco al campo de nombre para que el usuario pueda ingresar datos
+            nombreTextField.requestFocusInWindow();
         }
     }
 
