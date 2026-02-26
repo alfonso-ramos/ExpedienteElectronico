@@ -47,6 +47,7 @@ public class VistaReporte extends JFrame {
         configurarBusquedaPacientes();
         listarPacientes();
         this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
     }
 
     public void configurarIcono(){
